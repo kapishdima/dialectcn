@@ -7,7 +7,19 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!node_modules", "!.next", "!dist", "!build"]
+    "includes": [
+      "**",
+      "!node_modules",
+      "!.next",
+      "!dist",
+      "!build",
+      "!components/ui",
+      "!components/base",
+      "!components/preview-02",
+      "!components/code-block-command",
+      "!components/copy-button",
+      "!hooks"
+    ]
   },
   "formatter": {
     "enabled": true,
