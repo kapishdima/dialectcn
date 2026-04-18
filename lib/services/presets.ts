@@ -98,7 +98,6 @@ export async function extractColors(
   const config = decodePreset(code);
   if (!config) return null;
   const cssVars = await resolvePresetVars(config);
-  console.log("cssVars", cssVars)
   const merged = { ...(cssVars.theme ?? {}), ...(cssVars.light ?? {}) };
   return {
     primary: merged.primary ?? "oklch(0 0 0)",

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { PresetSidebar } from "@/components/preset-sidebar";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +18,9 @@ export default async function FeedIndex() {
   return (
     <>
       <div className="flex-1 md:hidden">
-        <PresetSidebar initialItems={items} initialCursor={nextCursor} />
+        <Suspense fallback={null}>
+          <PresetSidebar initialItems={items} initialCursor={nextCursor} />
+        </Suspense>
       </div>
       <div className="hidden flex-1 flex-col items-center justify-center gap-3 p-8 text-center md:flex">
         <Card className="w-[20vw] shadow-xs">
