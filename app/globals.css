@@ -4,6 +4,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@custom-variant style-nova (&:is(.style-nova, .style-nova *));
+@custom-variant style-vega (&:is(.style-vega, .style-vega *));
+@custom-variant style-maia (&:is(.style-maia, .style-maia *));
+@custom-variant style-lyra (&:is(.style-lyra, .style-lyra *));
+@custom-variant style-mira (&:is(.style-mira, .style-mira *));
+@custom-variant style-luma (&:is(.style-luma, .style-luma *));
+@custom-variant style-sera (&:is(.style-sera, .style-sera *));
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

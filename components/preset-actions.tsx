@@ -4,12 +4,17 @@ import {
   ArrowUpRight01Icon,
   Copy01Icon,
   Download01Icon,
+  Tick02Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { toast } from "sonner";
+import { useAtomValue } from "jotai";
+import { useEffect, useRef } from "react";
+import { CopyStateIcon } from "@/components/copy-button/copy-button";
 import { InstallDialog } from "@/components/install-dialog";
 import { LikeButton } from "@/components/like-button";
 import { Button } from "@/components/ui/button";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+import { copyTriggerAtom } from "@/lib/atoms/preset-ui";
 
 export function PresetActions({
   code,
@@ -22,14 +27,15 @@ export function PresetActions({
   initialLiked: boolean;
   initialLikes: number;
 }) {
-  async function copyCode() {
-    try {
-      await navigator.clipboard.writeText(code);
-      toast.success("Preset code copied");
-    } catch {
-      toast.error("Failed to copy");
-    }
-  }
+  const { state, copy } = useCopyToClipboard({});
+
+  const trigger = useAtomValue(copyTriggerAtom);
+  const lastTrigger = useRef(trigger);
+  useEffect(() => {
+    if (trigger === lastTrigger.current) return;
+    lastTrigger.current = trigger;
+    copy(code);
+  }, [trigger, code, copy]);
 
   const shadcnCreateUrl = `https://ui.shadcn.com/create?preset=${encodeURIComponent(
     code,
@@ -40,11 +46,17 @@ export function PresetActions({
       <Button
         variant="ghost"
         size="icon"
-        onClick={copyCode}
+        onClick={() => copy(code)}
         aria-label="Copy preset code"
         title="Copy preset code"
       >
-        <HugeiconsIcon icon={Copy01Icon} size={16} />
+        <CopyStateIcon
+          state={state}
+          idleIcon={<HugeiconsIcon icon={Copy01Icon} size={16} />}
+          doneIcon={
+            <HugeiconsIcon icon={Tick02Icon} size={16} strokeWidth={2} />
+          }
+        />
       </Button>
 
       <InstallDialog

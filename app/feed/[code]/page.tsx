@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { PresetStyle } from "@/components/preset-style";
 import { PresetTopBar } from "@/components/preset-top-bar";
-import Preview02Example from "@/components/preview-02";
+import { Preview02Frame } from "@/components/preview-02-frame";
 import { sourceLabel } from "@/lib/domain/source-labels";
 import { getCurrentUser } from "@/lib/services/auth";
 import { isLiked as isLikedService } from "@/lib/services/likes";
-import { getPresetByCode } from "@/lib/services/presets";
+import { getAdjacentCodes, getPresetByCode } from "@/lib/services/presets";
 
 type PageParams = { code: string };
 
@@ -38,19 +37,21 @@ export default async function PresetPreviewPage({
   const { code } = await params;
   const preset = await getPresetByCode(code);
   if (!preset) notFound();
-  const user = await getCurrentUser();
+  const [user, adjacent] = await Promise.all([
+    getCurrentUser(),
+    getAdjacentCodes(preset.code),
+  ]);
   const liked = user ? await isLikedService(user.id, preset.id) : false;
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <PresetTopBar preset={preset} isLiked={liked} />
-      <section
-        data-preset-id={preset.id}
-        className="min-h-0 min-w-0 flex-1 overflow-auto"
-      >
-        <PresetStyle code={preset.code} scopeId={preset.id} />
-        <Preview02Example />
-      </section>
+      <PresetTopBar
+        preset={preset}
+        isLiked={liked}
+        prev={adjacent.prev}
+        next={adjacent.next}
+      />
+      <Preview02Frame code={preset.code} />
     </div>
   );
 }

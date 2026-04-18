@@ -2,7 +2,9 @@ import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { DM_Sans, Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { Header } from "@/components/header";
+import { GlobalHotkeys } from "@/components/global-hotkeys";
+import { LoginModal } from "@/components/login-modal";
+import { SubmitModal } from "@/components/submit-modal";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -40,7 +42,7 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
       className={cn(
-        "h-full antialiased",
+        "h-dvh antialiased",
         "font-sans",
         geistSans.variable,
         geistMono.variable,
@@ -48,7 +50,7 @@ export default function RootLayout({
         spaceGroteskHeading.variable,
       )}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body className="flex h-dvh flex-col overflow-hidden bg-background text-foreground">
         <NuqsAdapter>
           <ThemeProvider
             attribute="class"
@@ -57,8 +59,10 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <TooltipProvider>
-              <Header />
-              <main className="flex flex-1 flex-col">{children}</main>
+              <main className="flex min-h-0 flex-1 flex-col">{children}</main>
+              <SubmitModal />
+              <LoginModal />
+              <GlobalHotkeys />
               <Toaster />
             </TooltipProvider>
           </ThemeProvider>

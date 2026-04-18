@@ -1,11 +1,14 @@
 import {
   generateRandomConfig,
-  PRESET_BASE_COLORS,
   PRESET_RADII,
-  PRESET_THEMES,
   type PresetConfig,
 } from "shadcn/preset";
 import { BRAND_PRESETS } from "@/lib/brand-presets";
+import {
+  SUPPORTED_BASE_COLORS,
+  SUPPORTED_THEMES,
+  sanitizeChartColor,
+} from "@/lib/domain/preset-compat";
 import { pickRandomName } from "@/lib/domain/random-name";
 import { insertRandomPreset, upsertBrandPreset } from "@/lib/services/presets";
 
@@ -24,8 +27,8 @@ function shuffle<T>(arr: readonly T[]): T[] {
 
 function enumerateVisualKeys(): VisualKey[] {
   const keys: VisualKey[] = [];
-  for (const baseColor of PRESET_BASE_COLORS) {
-    for (const theme of PRESET_THEMES) {
+  for (const baseColor of SUPPORTED_BASE_COLORS) {
+    for (const theme of SUPPORTED_THEMES) {
       for (const radius of PRESET_RADII) {
         keys.push({ baseColor, theme, radius });
       }
@@ -55,7 +58,10 @@ async function main() {
   let skipped = 0;
   for (let i = 0; i < picks.length; i++) {
     const visual = picks[i] as VisualKey;
-    const config: PresetConfig = { ...generateRandomConfig(), ...visual };
+    const config: PresetConfig = sanitizeChartColor({
+      ...generateRandomConfig(),
+      ...visual,
+    });
     const name = pickRandomName();
     const row = await insertRandomPreset({ name, config });
     if (row) inserted++;

@@ -9,7 +9,7 @@ export const metadata = { title: "Liked presets — dialectcn" };
 
 export default async function LikedPage() {
   const user = await getCurrentUser();
-  if (!user) redirect("/login?callbackUrl=/liked");
+  if (!user) redirect("/feed?auth=login&callbackUrl=/liked");
   const items = await listLikedByUser(user.id);
 
   return (

@@ -3,6 +3,7 @@
 import type { PresetSort, PresetSource } from "@/lib/domain/source-labels";
 import {
   extractColors,
+  getRandomCode,
   listPresets,
   type PresetWithColors,
 } from "@/lib/services/presets";
@@ -33,4 +34,10 @@ export async function fetchPresetsAction(
     })),
   );
   return { items: enriched, nextCursor };
+}
+
+export async function pickRandomPresetCodeAction(
+  exclude?: string,
+): Promise<string | null> {
+  return getRandomCode(exclude);
 }

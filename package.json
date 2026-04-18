@@ -10,6 +10,7 @@
     "format": "biome format --write",
     "test": "bun test",
     "seed": "bun run scripts/seed.ts",
+    "seed:brands": "bun run scripts/seed-brand-presets.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push"

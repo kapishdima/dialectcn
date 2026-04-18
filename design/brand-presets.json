@@ -1,0 +1,898 @@
+[
+  {
+    "slug": "airbnb",
+    "name": "Airbnb",
+    "description": "Inspired by Airbnb — warm stone surface, rausch-red brand accent, generous radii",
+    "config": {
+      "style": "luma",
+      "baseColor": "stone",
+      "theme": "rose",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "airtable",
+    "name": "Airtable",
+    "description": "Inspired by Airtable — crisp mist canvas, navy text, confident Airtable-blue accent",
+    "config": {
+      "style": "maia",
+      "baseColor": "mist",
+      "theme": "blue",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "medium",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "apple",
+    "name": "Apple",
+    "description": "Inspired by Apple — binary black-on-white stage with a single apple-blue signal",
+    "config": {
+      "style": "nova",
+      "baseColor": "zinc",
+      "theme": "blue",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "bmw",
+    "name": "BMW",
+    "description": "Inspired by BMW — industrial sharp-cornered geometry with a single BMW-blue accent",
+    "config": {
+      "style": "nova",
+      "baseColor": "neutral",
+      "theme": "blue",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "none",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "cal",
+    "name": "Cal.com",
+    "description": "Inspired by Cal.com — grayscale monochrome with rounded interactive geometry",
+    "config": {
+      "style": "vega",
+      "baseColor": "zinc",
+      "theme": "neutral",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "medium",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "claude",
+    "name": "Claude",
+    "description": "Inspired by Claude — warm parchment surface, terracotta accent, serif headline voice",
+    "config": {
+      "style": "luma",
+      "baseColor": "stone",
+      "theme": "red",
+      "font": "inter",
+      "fontHeading": "instrument-serif",
+      "radius": "medium",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "clay",
+    "name": "Clay",
+    "description": "Inspired by Clay — artisanal cream canvas with warm gold-amber accent",
+    "config": {
+      "style": "luma",
+      "baseColor": "stone",
+      "theme": "amber",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "clickhouse",
+    "name": "ClickHouse",
+    "description": "Inspired by ClickHouse — neutral canvas with electric lime accent, tight radii",
+    "config": {
+      "style": "nova",
+      "baseColor": "neutral",
+      "theme": "lime",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "small",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "cohere",
+    "name": "Cohere",
+    "description": "Inspired by Cohere — cool mist surface, serif display voice, signature rounded cards",
+    "config": {
+      "style": "luma",
+      "baseColor": "mist",
+      "theme": "blue",
+      "font": "inter",
+      "fontHeading": "instrument-serif",
+      "radius": "medium",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "coinbase",
+    "name": "Coinbase",
+    "description": "Inspired by Coinbase — trustworthy blue on crisp mist with pill-shaped CTAs",
+    "config": {
+      "style": "maia",
+      "baseColor": "mist",
+      "theme": "blue",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "composio",
+    "name": "Composio",
+    "description": "Inspired by Composio — pitch-black terminal with deep indigo signal accent",
+    "config": {
+      "style": "nova",
+      "baseColor": "neutral",
+      "theme": "indigo",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "small",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "cursor",
+    "name": "Cursor",
+    "description": "Inspired by Cursor — warm stone surface, rust-red accent, serif body voice",
+    "config": {
+      "style": "luma",
+      "baseColor": "stone",
+      "theme": "red",
+      "font": "inter",
+      "fontHeading": "instrument-serif",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "elevenlabs",
+    "name": "ElevenLabs",
+    "description": "Inspired by ElevenLabs — warm off-white canvas, whisper-light type, pill geometry",
+    "config": {
+      "style": "luma",
+      "baseColor": "stone",
+      "theme": "neutral",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "expo",
+    "name": "Expo",
+    "description": "Inspired by Expo — cool off-white gallery, cobalt links, pill-shaped geometry",
+    "config": {
+      "style": "nova",
+      "baseColor": "mist",
+      "theme": "blue",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "ferrari",
+    "name": "Ferrari",
+    "description": "Inspired by Ferrari — cinematic black-and-white editorial with a single rosso-red accent",
+    "config": {
+      "style": "nova",
+      "baseColor": "neutral",
+      "theme": "red",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "small",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "figma",
+    "name": "Figma",
+    "description": "Inspired by Figma — strict black-and-white chrome with pill-and-circle geometry",
+    "config": {
+      "style": "nova",
+      "baseColor": "zinc",
+      "theme": "neutral",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "framer",
+    "name": "Framer",
+    "description": "Inspired by Framer — pure-black void, electric sky accent, pill-shaped interactives",
+    "config": {
+      "style": "vega",
+      "baseColor": "neutral",
+      "theme": "sky",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "hashicorp",
+    "name": "HashiCorp",
+    "description": "Inspired by HashiCorp — dual-mode enterprise grays with a confident blue action color",
+    "config": {
+      "style": "nova",
+      "baseColor": "neutral",
+      "theme": "blue",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "small",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "ibm",
+    "name": "IBM",
+    "description": "Inspired by IBM — Carbon-style neutrals with IBM-blue signal and rectangular geometry",
+    "config": {
+      "style": "nova",
+      "baseColor": "neutral",
+      "theme": "blue",
+      "font": "ibm-plex-sans",
+      "fontHeading": "inherit",
+      "radius": "none",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "intercom",
+    "name": "Intercom",
+    "description": "Inspired by Intercom — warm stone canvas, Fin-orange accent, sharp 4px geometry",
+    "config": {
+      "style": "luma",
+      "baseColor": "stone",
+      "theme": "red",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "small",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "kraken",
+    "name": "Kraken",
+    "description": "Inspired by Kraken — crisp mist surface with commanding violet brand accent",
+    "config": {
+      "style": "maia",
+      "baseColor": "mist",
+      "theme": "violet",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "medium",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "lamborghini",
+    "name": "Lamborghini",
+    "description": "Inspired by Lamborghini — true-black cathedral with a single yellow-gold accent",
+    "config": {
+      "style": "nova",
+      "baseColor": "neutral",
+      "theme": "yellow",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "none",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "linear.app",
+    "name": "Linear",
+    "description": "Inspired by Linear — quiet violet accent, compressed type, tight mauve-dark radii",
+    "config": {
+      "style": "vega",
+      "baseColor": "mauve",
+      "theme": "violet",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "small",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "lovable",
+    "name": "Lovable",
+    "description": "Inspired by Lovable — warm parchment canvas, humanist type, full-pill buttons",
+    "config": {
+      "style": "luma",
+      "baseColor": "stone",
+      "theme": "neutral",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "minimax",
+    "name": "MiniMax",
+    "description": "Inspired by MiniMax — bright mist canvas, brand-blue action, pill-and-card geometry",
+    "config": {
+      "style": "maia",
+      "baseColor": "mist",
+      "theme": "blue",
+      "font": "dm-sans",
+      "fontHeading": "outfit",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "mintlify",
+    "name": "Mintlify",
+    "description": "Inspired by Mintlify — luminous white documentation with fresh emerald accent",
+    "config": {
+      "style": "nova",
+      "baseColor": "mist",
+      "theme": "emerald",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "miro",
+    "name": "Miro",
+    "description": "Inspired by Miro — bright canvas, indigo interactive accent, soft pastel accents",
+    "config": {
+      "style": "maia",
+      "baseColor": "mist",
+      "theme": "indigo",
+      "font": "noto-sans",
+      "fontHeading": "inherit",
+      "radius": "medium",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "mistral.ai",
+    "name": "Mistral AI",
+    "description": "Inspired by Mistral — sun-drenched stone canvas, amber brand glow, sharp geometry",
+    "config": {
+      "style": "nova",
+      "baseColor": "stone",
+      "theme": "amber",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "none",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "mongodb",
+    "name": "MongoDB",
+    "description": "Inspired by MongoDB — olive forest-dark surface, neon-green accent, serif authority",
+    "config": {
+      "style": "luma",
+      "baseColor": "olive",
+      "theme": "green",
+      "font": "inter",
+      "fontHeading": "instrument-serif",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "notion",
+    "name": "Notion",
+    "description": "Inspired by Notion — warm stone paper surface with Notion-blue singular accent",
+    "config": {
+      "style": "luma",
+      "baseColor": "stone",
+      "theme": "blue",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "default",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "nvidia",
+    "name": "NVIDIA",
+    "description": "Inspired by NVIDIA — engineered black canvas with signature lime-green accent",
+    "config": {
+      "style": "nova",
+      "baseColor": "neutral",
+      "theme": "lime",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "none",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "ollama",
+    "name": "Ollama",
+    "description": "Inspired by Ollama — pure grayscale canvas with rounded, pill-shaped interactives",
+    "config": {
+      "style": "maia",
+      "baseColor": "neutral",
+      "theme": "neutral",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "opencode.ai",
+    "name": "OpenCode",
+    "description": "Inspired by OpenCode — warm terminal-dark surface, Apple-blue accent, mono-only type",
+    "config": {
+      "style": "nova",
+      "baseColor": "stone",
+      "theme": "blue",
+      "font": "geist-mono",
+      "fontHeading": "geist-mono",
+      "radius": "small",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "pinterest",
+    "name": "Pinterest",
+    "description": "Inspired by Pinterest — warm stone canvas, bold Pinterest-red accent, generous radii",
+    "config": {
+      "style": "luma",
+      "baseColor": "stone",
+      "theme": "red",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "posthog",
+    "name": "PostHog",
+    "description": "Inspired by PostHog — warm olive-sage canvas with hidden amber-orange accent",
+    "config": {
+      "style": "luma",
+      "baseColor": "olive",
+      "theme": "amber",
+      "font": "ibm-plex-sans",
+      "fontHeading": "inherit",
+      "radius": "medium",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "raycast",
+    "name": "Raycast",
+    "description": "Inspired by Raycast — near-black precision instrument with Raycast-red punctuation",
+    "config": {
+      "style": "nova",
+      "baseColor": "zinc",
+      "theme": "red",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "medium",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "renault",
+    "name": "Renault",
+    "description": "Inspired by Renault — binary black-and-white with Renault-yellow super-primary accent",
+    "config": {
+      "style": "nova",
+      "baseColor": "neutral",
+      "theme": "yellow",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "none",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "replicate",
+    "name": "Replicate",
+    "description": "Inspired by Replicate — explosive red-magenta energy with full-pill interactives",
+    "config": {
+      "style": "lyra",
+      "baseColor": "neutral",
+      "theme": "red",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "resend",
+    "name": "Resend",
+    "description": "Inspired by Resend — theatrical black stage, icy blue accents, serif display voice",
+    "config": {
+      "style": "luma",
+      "baseColor": "neutral",
+      "theme": "sky",
+      "font": "inter",
+      "fontHeading": "instrument-serif",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "revolut",
+    "name": "Revolut",
+    "description": "Inspired by Revolut — near-black fintech canvas, indigo brand, pill interactives",
+    "config": {
+      "style": "nova",
+      "baseColor": "zinc",
+      "theme": "indigo",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "runwayml",
+    "name": "Runway",
+    "description": "Inspired by Runway — cinematic cool-gray canvas where photography carries all color",
+    "config": {
+      "style": "vega",
+      "baseColor": "zinc",
+      "theme": "neutral",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "default",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "sanity",
+    "name": "Sanity",
+    "description": "Inspired by Sanity — disciplined near-black canvas with coral-red CTA accent",
+    "config": {
+      "style": "nova",
+      "baseColor": "neutral",
+      "theme": "red",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "sentry",
+    "name": "Sentry",
+    "description": "Inspired by Sentry — deep mauve-purple debugging canvas with warm violet accents",
+    "config": {
+      "style": "lyra",
+      "baseColor": "mauve",
+      "theme": "violet",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "medium",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "spacex",
+    "name": "SpaceX",
+    "description": "Inspired by SpaceX — pure black cinematic void, spectral white type, minimal UI",
+    "config": {
+      "style": "nova",
+      "baseColor": "neutral",
+      "theme": "neutral",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "medium",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "spotify",
+    "name": "Spotify",
+    "description": "Inspired by Spotify — near-black theatre with signature green accent and pill buttons",
+    "config": {
+      "style": "maia",
+      "baseColor": "neutral",
+      "theme": "green",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "stripe",
+    "name": "Stripe",
+    "description": "Inspired by Stripe — olive-tinted canvas, deep indigo accent, conservative geometry",
+    "config": {
+      "style": "lyra",
+      "baseColor": "olive",
+      "theme": "indigo",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "small",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "supabase",
+    "name": "Supabase",
+    "description": "Inspired by Supabase — near-black editor surface with signature emerald brand",
+    "config": {
+      "style": "maia",
+      "baseColor": "zinc",
+      "theme": "emerald",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "superhuman",
+    "name": "Superhuman",
+    "description": "Inspired by Superhuman — warm stone canvas, lavender-violet accent, disciplined radii",
+    "config": {
+      "style": "luma",
+      "baseColor": "stone",
+      "theme": "violet",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "medium",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "tesla",
+    "name": "Tesla",
+    "description": "Inspired by Tesla — austere zinc-white showroom with a single electric-blue CTA",
+    "config": {
+      "style": "nova",
+      "baseColor": "zinc",
+      "theme": "blue",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "small",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "together.ai",
+    "name": "Together AI",
+    "description": "Inspired by Together AI — mist canvas with pastel pink-magenta brand accents",
+    "config": {
+      "style": "maia",
+      "baseColor": "mist",
+      "theme": "pink",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "small",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "uber",
+    "name": "Uber",
+    "description": "Inspired by Uber — strict black-and-white duality with pill-shaped geometry everywhere",
+    "config": {
+      "style": "nova",
+      "baseColor": "neutral",
+      "theme": "neutral",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "vercel",
+    "name": "Vercel",
+    "description": "Inspired by Vercel — monochrome zinc canvas, precise Geist type, engineered shadows",
+    "config": {
+      "style": "nova",
+      "baseColor": "zinc",
+      "theme": "neutral",
+      "font": "geist",
+      "fontHeading": "inherit",
+      "radius": "small",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "voltagent",
+    "name": "VoltAgent",
+    "description": "Inspired by VoltAgent — warm carbon surface with emerald-signal green accent",
+    "config": {
+      "style": "nova",
+      "baseColor": "stone",
+      "theme": "emerald",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "medium",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "warp",
+    "name": "Warp",
+    "description": "Inspired by Warp — warm stone terminal canvas, restrained palette, pill CTAs",
+    "config": {
+      "style": "luma",
+      "baseColor": "stone",
+      "theme": "neutral",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "webflow",
+    "name": "Webflow",
+    "description": "Inspired by Webflow — crisp mist canvas, Webflow-blue signal, conservative radii",
+    "config": {
+      "style": "nova",
+      "baseColor": "mist",
+      "theme": "blue",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "small",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  },
+  {
+    "slug": "wise",
+    "name": "Wise",
+    "description": "Inspired by Wise — warm stone canvas with lime-green fintech accent, pill buttons",
+    "config": {
+      "style": "lyra",
+      "baseColor": "stone",
+      "theme": "lime",
+      "font": "inter",
+      "fontHeading": "inherit",
+      "radius": "large",
+      "iconLibrary": "lucide",
+      "menuColor": "default",
+      "menuAccent": "subtle"
+    }
+  }
+]

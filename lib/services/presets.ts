@@ -1,4 +1,4 @@
-import { and, desc, eq, lt, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, lt, sql } from "drizzle-orm";
 import { cache } from "react";
 import { decodePreset, encodePreset, type PresetConfig } from "shadcn/preset";
 import { db } from "@/lib/db/client";
@@ -7,8 +7,41 @@ import {
   buildScopedCssText,
   type RegistryThemeCssVars,
 } from "@/lib/domain/preset-css";
+import { getPresetTheme } from "@/lib/domain/preset-themes";
 import type { PresetSort, PresetSource } from "@/lib/domain/source-labels";
 import { getBaseColorVars } from "@/lib/services/base-colors";
+
+const CHART_KEYS = ["chart-1", "chart-2", "chart-3", "chart-4", "chart-5"];
+
+async function resolvePresetVars(
+  config: PresetConfig,
+): Promise<RegistryThemeCssVars> {
+  const base = await getBaseColorVars(config.baseColor);
+  const theme = getPresetTheme(config.theme);
+  const chart = config.chartColor
+    ? getPresetTheme(config.chartColor)
+    : undefined;
+
+  const light: Record<string, string> = {
+    ...(base.light ?? {}),
+    ...(theme?.cssVars.light ?? {}),
+  };
+  const dark: Record<string, string> = {
+    ...(base.dark ?? {}),
+    ...(theme?.cssVars.dark ?? {}),
+  };
+
+  if (chart) {
+    const chartLight = chart.cssVars.light as Record<string, string>;
+    const chartDark = chart.cssVars.dark as Record<string, string>;
+    for (const key of CHART_KEYS) {
+      if (chartLight[key]) light[key] = chartLight[key];
+      if (chartDark[key]) dark[key] = chartDark[key];
+    }
+  }
+
+  return { theme: base.theme, light, dark };
+}
 
 const FEED_PAGE_SIZE = 24;
 const FEATURED_BRAND_SLUGS = ["vercel", "claude", "linear", "stripe"];
@@ -39,7 +72,7 @@ export async function buildPresetCss(
 ): Promise<string | null> {
   const config = decodePreset(code);
   if (!config) return null;
-  const cssVars = await getBaseColorVars(config.baseColor);
+  const cssVars = await resolvePresetVars(config);
   const withRadius = applyRadius(cssVars, config.radius);
   return buildScopedCssText(withRadius, selector);
 }
@@ -50,8 +83,8 @@ export function resolvePresetConfig(code: string): PresetConfig | null {
 
 export type PresetColors = {
   primary: string;
-  secondary: string;
-  accent: string;
+  card: string;
+  chart1: string;
   destructive: string;
 };
 
@@ -64,12 +97,13 @@ export async function extractColors(
 ): Promise<PresetColors | null> {
   const config = decodePreset(code);
   if (!config) return null;
-  const cssVars = await getBaseColorVars(config.baseColor);
+  const cssVars = await resolvePresetVars(config);
+  console.log("cssVars", cssVars)
   const merged = { ...(cssVars.theme ?? {}), ...(cssVars.light ?? {}) };
   return {
     primary: merged.primary ?? "oklch(0 0 0)",
-    secondary: merged.secondary ?? "oklch(0.5 0 0)",
-    accent: merged.accent ?? "oklch(0.7 0 0)",
+    chart1: merged["chart-1"] ?? "oklch(0.7 0 0)",
+    card: merged.card ?? "oklch(0.95 0.1 0)",
     destructive: merged.destructive ?? "oklch(0.55 0.2 25)",
   };
 }
@@ -179,6 +213,42 @@ export async function getPresetByCode(
     .limit(1);
   const row = rows[0];
   return row ? rowToSummary(row) : null;
+}
+
+export async function getAdjacentCodes(
+  currentCode: string,
+): Promise<{ prev: string | null; next: string | null }> {
+  const [current] = await db
+    .select({ id: preset.id })
+    .from(preset)
+    .where(eq(preset.code, currentCode))
+    .limit(1);
+  if (!current) return { prev: null, next: null };
+  const [prevRow, nextRow] = await Promise.all([
+    db
+      .select({ code: preset.code })
+      .from(preset)
+      .where(gt(preset.id, current.id))
+      .orderBy(asc(preset.id))
+      .limit(1),
+    db
+      .select({ code: preset.code })
+      .from(preset)
+      .where(lt(preset.id, current.id))
+      .orderBy(desc(preset.id))
+      .limit(1),
+  ]);
+  return { prev: prevRow[0]?.code ?? null, next: nextRow[0]?.code ?? null };
+}
+
+export async function getRandomCode(exclude?: string): Promise<string | null> {
+  const rows = await db
+    .select({ code: preset.code })
+    .from(preset)
+    .where(exclude ? sql`${preset.code} <> ${exclude}` : undefined)
+    .orderBy(sql`random()`)
+    .limit(1);
+  return rows[0]?.code ?? null;
 }
 
 export async function listFeaturedBrand(): Promise<PresetSummary[]> {

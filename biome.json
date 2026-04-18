@@ -15,7 +15,7 @@
       "!build",
       "!components/ui",
       "!components/base",
-      "!components/preview-02",
+      "!app/styles",
       "!components/code-block-command",
       "!components/copy-button",
       "!hooks"

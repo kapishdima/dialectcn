@@ -8,7 +8,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPaths: MetadataRoute.Sitemap = [
     { url: `${base}/`, changeFrequency: "weekly" },
     { url: `${base}/feed`, changeFrequency: "daily" },
-    { url: `${base}/submit`, changeFrequency: "monthly" },
   ];
   const presets = await listIndexableForSitemap();
   return [

@@ -1,9 +1,12 @@
 "use client";
 
+import { useSetAtom } from "jotai";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { loginModalAtom } from "@/lib/atoms/login-modal";
+import { submitModalOpenAtom } from "@/lib/atoms/submit-modal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +20,8 @@ import { authClient } from "@/lib/auth-client";
 export function HeaderUser() {
   const { data: session, isPending } = authClient.useSession();
   const router = useRouter();
+  const openSubmit = useSetAtom(submitModalOpenAtom);
+  const setLogin = useSetAtom(loginModalAtom);
 
   if (isPending) {
     return <div className="size-8 rounded-full bg-muted animate-pulse" />;
@@ -24,7 +29,10 @@ export function HeaderUser() {
 
   if (!session?.user) {
     return (
-      <Button size="sm" render={<Link href="/login" />}>
+      <Button
+        size="sm"
+        onClick={() => setLogin({ open: true, callbackUrl: "/feed" })}
+      >
         Log in
       </Button>
     );
@@ -57,7 +65,7 @@ export function HeaderUser() {
         <DropdownMenuItem render={<Link href="/liked" />}>
           Your likes
         </DropdownMenuItem>
-        <DropdownMenuItem render={<Link href="/submit" />}>
+        <DropdownMenuItem onSelect={() => openSubmit(true)}>
           Submit preset
         </DropdownMenuItem>
         <DropdownMenuSeparator />

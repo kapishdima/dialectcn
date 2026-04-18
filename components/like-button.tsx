@@ -2,10 +2,12 @@
 
 import { FavouriteIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { useOptimistic, useTransition } from "react";
-import { toast } from "sonner";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useEffect, useOptimistic, useRef, useTransition } from "react";
 import { toggleLikeAction } from "@/app/(actions)/like";
 import { Button } from "@/components/ui/button";
+import { loginModalAtom } from "@/lib/atoms/login-modal";
+import { likeTriggerAtom } from "@/lib/atoms/preset-ui";
 import { cn } from "@/lib/utils";
 
 type State = { liked: boolean; count: number };
@@ -33,6 +35,7 @@ export function LikeButton({
       count: next ? prev.count + 1 : Math.max(prev.count - 1, 0),
     }),
   );
+  const setLogin = useSetAtom(loginModalAtom);
 
   function onClick() {
     const next = !state.liked;
@@ -40,16 +43,32 @@ export function LikeButton({
       apply(next);
       const res = await toggleLikeAction(presetId);
       if (res.status === "unauthorized") {
-        toast.error("Log in to like presets");
+        setLogin({
+          open: true,
+          callbackUrl:
+            typeof window !== "undefined"
+              ? window.location.pathname + window.location.search
+              : "/feed",
+        });
       }
     });
   }
+
+  const onClickRef = useRef(onClick);
+  onClickRef.current = onClick;
+  const trigger = useAtomValue(likeTriggerAtom);
+  const lastTrigger = useRef(trigger);
+  useEffect(() => {
+    if (trigger === lastTrigger.current) return;
+    lastTrigger.current = trigger;
+    onClickRef.current();
+  }, [trigger]);
 
   return (
     <Button
       type="button"
       variant={variant}
-      size={showCount ? "sm" : size}
+      size="xs"
       aria-pressed={state.liked}
       onClick={onClick}
       disabled={isPending}
@@ -60,7 +79,7 @@ export function LikeButton({
         size={16}
         className={cn(state.liked && "fill-current")}
       />
-      {showCount ? <span>{state.count}</span> : null}
+      <span>{state.count}</span>
     </Button>
   );
 }
