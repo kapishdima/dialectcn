@@ -68,11 +68,11 @@ export function HeaderUser() {
         <DropdownMenuItem render={<Link href="/liked" />}>
           Your likes
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => openSubmit(true)}>
+        <DropdownMenuItem onClick={() => openSubmit(true)}>
           Submit preset
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={signOut}>Log out</DropdownMenuItem>
+        <DropdownMenuItem onClick={signOut}>Log out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
