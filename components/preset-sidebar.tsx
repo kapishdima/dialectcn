@@ -15,9 +15,9 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   PRESET_SORTS,
+  PRESET_SOURCES,
   type PresetSort,
   type PresetSource,
 } from "@/lib/domain/source-labels";
@@ -29,12 +29,12 @@ type Props = {
   initialCursor: string | null;
 };
 
-const SOURCE_TABS: Array<{ key: "all" | PresetSource; label: string }> = [
-  { key: "all", label: "All" },
-  { key: "brand", label: "Brand" },
-  { key: "community", label: "Community" },
-  { key: "random", label: "Random" },
-];
+const SOURCE_LABELS: Record<"all" | PresetSource, string> = {
+  all: "All",
+  brand: "Brand",
+  community: "Community",
+  random: "Random",
+};
 
 const SORT_LABELS: Record<PresetSort, string> = {
   popular: "Popular",
@@ -50,27 +50,85 @@ export function PresetSidebar({ initialItems, initialCursor }: Props) {
 
   const queryString = serializeFeedFilters(filters);
   const activeSource: "all" | PresetSource = filters.source ?? "all";
+  const activeSort = filters.sort;
+
+  const setSource = (value: "all" | PresetSource) =>
+    setFilters({ source: value === "all" ? null : value });
+  const setSort = (value: PresetSort) => setFilters({ sort: value });
 
   return (
     <div className="flex h-full flex-col ">
-      <div className="sticky top-0 z-10 flex items-center justify-between gap-2 bg-background py-2 border-b border-border">
-        <Tabs
-          value={activeSource}
-          onValueChange={(value) =>
-            setFilters({
-              source: value === "all" ? null : (value as PresetSource),
-            })
-          }
-        >
-          <TabsList variant="line">
-            {SOURCE_TABS.map((tab) => (
-              <TabsTrigger key={tab.key} value={tab.key}>
-                {tab.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+      <div
+        data-id="preset-sidebar-top"
+        className="sticky top-0 z-10 flex items-center gap-2 bg-background px-2 py-2 border-b border-border"
+      >
+        <div className="min-w-0 flex-1">
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="justify-between gap-1 px-2.5"
+                />
+              }
+            >
+              {SOURCE_LABELS[activeSource]}
+              <HugeiconsIcon
+                icon={ArrowDown01Icon}
+                size={12}
+                strokeWidth={1.5}
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuRadioGroup
+                value={activeSource}
+                onValueChange={(v) => setSource(v as "all" | PresetSource)}
+              >
+                <DropdownMenuRadioItem value="all">All</DropdownMenuRadioItem>
+                {PRESET_SOURCES.map((s) => (
+                  <DropdownMenuRadioItem key={s} value={s}>
+                    {SOURCE_LABELS[s]}
+                  </DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className="shrink-0">
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-1 px-2 text-muted-foreground hover:text-foreground"
+                />
+              }
+            >
+              {SORT_LABELS[activeSort]}
+              <HugeiconsIcon
+                icon={ArrowDown01Icon}
+                size={12}
+                strokeWidth={1.5}
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuRadioGroup
+                value={activeSort}
+                onValueChange={(v) => setSort(v as PresetSort)}
+              >
+                {PRESET_SORTS.map((s) => (
+                  <DropdownMenuRadioItem key={s} value={s}>
+                    {SORT_LABELS[s]}
+                  </DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
+
       <ListWithPagination<PresetWithColors>
         className="[scrollbar-width:none] [&::-webkit-scrollbar]:hidden px-2 "
         initialItems={initialItems}
