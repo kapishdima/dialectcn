@@ -1,8 +1,14 @@
+import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import Link from "next/link";
 import { PresetActions } from "@/components/preset-actions";
 import { PresetContextSync } from "@/components/preset-context-sync";
 import { PresetNav } from "@/components/preset-nav";
+import { PresetSidebarToggle } from "@/components/preset-sidebar-toggle";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 import type { PresetSummary } from "@/lib/services/presets";
+import { cn } from "@/lib/utils";
 
 type Props = {
   preset: PresetSummary;
@@ -23,6 +29,17 @@ export function PresetTopBar({ preset, isLiked, prev, next }: Props) {
         prev={prev}
         next={next}
       />
+      <Link
+        href="/feed"
+        aria-label="Back to presets"
+        className={cn(
+          buttonVariants({ variant: "ghost", size: "icon-sm" }),
+          "md:hidden",
+        )}
+      >
+        <HugeiconsIcon icon={ArrowLeft01Icon} size={16} strokeWidth={1.5} />
+      </Link>
+      <PresetSidebarToggle />
       <h1 className="truncate text-sm font-medium tracking-tight">
         {displayName}
       </h1>

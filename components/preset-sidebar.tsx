@@ -7,6 +7,7 @@ import { useQueryStates } from "nuqs";
 import { fetchPresetsAction } from "@/app/(actions)/presets";
 import { ListWithPagination } from "@/components/list-with-pagination";
 import { PresetListItem } from "@/components/preset-list-item";
+import { SidebarEmptyState } from "@/components/sidebar-empty-state";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -60,7 +61,7 @@ export function PresetSidebar({ initialItems, initialCursor }: Props) {
     <div className="flex h-full flex-col ">
       <div
         data-id="preset-sidebar-top"
-        className="sticky top-0 z-10 flex items-center gap-2 bg-background px-2 py-2 border-b border-border"
+        className="sticky top-0 z-10 flex items-center gap-2 bg-background px-2 py-2.5 border-b border-border"
       >
         <div className="min-w-0 flex-1">
           <DropdownMenu>
@@ -150,9 +151,10 @@ export function PresetSidebar({ initialItems, initialCursor }: Props) {
           />
         )}
         empty={
-          <li className="p-8 text-center text-sm text-muted-foreground">
-            No presets found.
-          </li>
+          <SidebarEmptyState
+            source={activeSource}
+            onShowAll={() => setSource("all")}
+          />
         }
         loadingIndicator={
           <li className="p-4 text-center text-xs text-muted-foreground">
