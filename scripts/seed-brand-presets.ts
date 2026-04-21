@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import {
+  PRESET_BASE_COLORS,
   PRESET_FONT_HEADINGS,
   PRESET_FONTS,
   PRESET_ICON_LIBRARIES,
@@ -8,12 +9,9 @@ import {
   PRESET_MENU_COLORS,
   PRESET_RADII,
   PRESET_STYLES,
+  PRESET_THEMES,
 } from "shadcn/preset";
 import { z } from "zod";
-import {
-  SUPPORTED_BASE_COLORS,
-  SUPPORTED_THEMES,
-} from "@/lib/domain/preset-compat";
 import { upsertBrandPreset } from "@/lib/services/presets";
 
 const JSON_PATH = resolve(process.cwd(), "design/brand-presets.json");
@@ -23,8 +21,8 @@ const JSON_PATH = resolve(process.cwd(), "design/brand-presets.json");
 // inserted. For a clean rebuild, delete `source='brand'` rows first.
 const presetConfigSchema = z.object({
   style: z.enum(PRESET_STYLES as readonly [string, ...string[]]),
-  baseColor: z.enum(SUPPORTED_BASE_COLORS as unknown as readonly [string, ...string[]]),
-  theme: z.enum(SUPPORTED_THEMES as unknown as readonly [string, ...string[]]),
+  baseColor: z.enum(PRESET_BASE_COLORS as readonly [string, ...string[]]),
+  theme: z.enum(PRESET_THEMES as readonly [string, ...string[]]),
   font: z.enum(PRESET_FONTS as readonly [string, ...string[]]),
   fontHeading: z.enum(PRESET_FONT_HEADINGS as readonly [string, ...string[]]),
   radius: z.enum(PRESET_RADII as readonly [string, ...string[]]),

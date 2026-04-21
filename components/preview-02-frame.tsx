@@ -2,23 +2,12 @@
 
 import { useMemo, useState } from "react";
 import { decodePreset } from "shadcn/preset";
-import { isShadcnPreviewSupported } from "@/lib/domain/preset-compat";
 import { cn } from "@/lib/utils";
 
 const SHADCN_PREVIEW_BASE = "https://ui.shadcn.com/preview/radix/preview-02";
 
-const FIELD_LABEL = {
-  baseColor: "Base color",
-  theme: "Theme",
-  chartColor: "Chart color",
-} as const;
-
 export function Preview02Frame({ code }: { code: string }) {
   const config = useMemo(() => decodePreset(code), [code]);
-  const compat = useMemo(
-    () => (config ? isShadcnPreviewSupported(config) : null),
-    [config],
-  );
   const src = useMemo(
     () => `${SHADCN_PREVIEW_BASE}?preset=${encodeURIComponent(code)}`,
     [code],
@@ -29,15 +18,6 @@ export function Preview02Frame({ code }: { code: string }) {
 
   if (!config) {
     return <FrameFallback title="Invalid preset code" />;
-  }
-
-  if (compat && !compat.ok) {
-    return (
-      <FrameFallback
-        title="Preview unavailable"
-        detail={`${FIELD_LABEL[compat.field]} "${compat.value}" is not supported by the shadcn.com preview.`}
-      />
-    );
   }
 
   return (

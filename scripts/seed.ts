@@ -1,18 +1,20 @@
 import {
   generateRandomConfig,
+  PRESET_BASE_COLORS,
   PRESET_RADII,
+  PRESET_THEMES,
   type PresetConfig,
 } from "shadcn/preset";
 import { BRAND_PRESETS } from "@/lib/brand-presets";
-import {
-  SUPPORTED_BASE_COLORS,
-  SUPPORTED_THEMES,
-  sanitizeChartColor,
-} from "@/lib/domain/preset-compat";
 import { pickRandomName } from "@/lib/domain/random-name";
 import { insertRandomPreset, upsertBrandPreset } from "@/lib/services/presets";
 
 const RANDOM_COUNT = 100;
+
+// ui.shadcn.com's baseColor selector doesn't offer these; skip them in random
+// seed so the pool stays visually aligned with the reference UI. Listed as
+// string to also cover values that aren't in PRESET_BASE_COLORS today.
+const EXCLUDED_RANDOM_BASE_COLORS = new Set<string>(["gray", "orange"]);
 
 type VisualKey = Pick<PresetConfig, "baseColor" | "theme" | "radius">;
 
@@ -27,8 +29,11 @@ function shuffle<T>(arr: readonly T[]): T[] {
 
 function enumerateVisualKeys(): VisualKey[] {
   const keys: VisualKey[] = [];
-  for (const baseColor of SUPPORTED_BASE_COLORS) {
-    for (const theme of SUPPORTED_THEMES) {
+  const baseColors = PRESET_BASE_COLORS.filter(
+    (v) => !EXCLUDED_RANDOM_BASE_COLORS.has(v),
+  );
+  for (const baseColor of baseColors) {
+    for (const theme of PRESET_THEMES) {
       for (const radius of PRESET_RADII) {
         keys.push({ baseColor, theme, radius });
       }
@@ -58,10 +63,10 @@ async function main() {
   let skipped = 0;
   for (let i = 0; i < picks.length; i++) {
     const visual = picks[i] as VisualKey;
-    const config: PresetConfig = sanitizeChartColor({
+    const config: PresetConfig = {
       ...generateRandomConfig(),
       ...visual,
-    });
+    };
     const name = pickRandomName();
     const row = await insertRandomPreset({ name, config });
     if (row) inserted++;
