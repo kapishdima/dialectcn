@@ -39,6 +39,7 @@ function ItemPendingOverlay() {
 
 function PresetListItemImpl({ preset, isActive, queryString }: Props) {
   const href = `/feed/${preset.code}${queryString}`;
+  const previewHref = `https://ui.shadcn.com/preview/radix/preview-02?preset=${encodeURIComponent(preset.code)}`;
   const displayName = preset.name ?? preset.code.slice(0, 10);
   const colors = preset.colors;
   const fonts = preset.fonts;
@@ -72,6 +73,7 @@ function PresetListItemImpl({ preset, isActive, queryString }: Props) {
         isActive ? "border-border bg-card" : "border-border/40 bg-card/30",
       )}
     >
+      {intent ? <link rel="prefetch" as="document" href={previewHref} /> : null}
       <ItemPendingOverlay />
       <div className="flex shrink-0 -space-x-1">
         {dots.length === 0 ? (
