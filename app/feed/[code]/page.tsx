@@ -46,9 +46,11 @@ export default async function PresetPreviewPage({
   params: Promise<PageParams>;
 }) {
   const { code } = await params;
-  const preset = await getPresetByCode(code);
+  const [preset, adjacent] = await Promise.all([
+    getPresetByCode(code),
+    getAdjacentCodes(code),
+  ]);
   if (!preset) notFound();
-  const adjacent = await getAdjacentCodes(preset.code);
 
   return (
     <div className="flex h-full min-h-0 flex-col">

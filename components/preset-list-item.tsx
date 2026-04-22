@@ -3,7 +3,7 @@
 import { FavouriteIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link, { useLinkStatus } from "next/link";
-import { useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 
 import type { PresetWithColors } from "@/lib/services/presets";
 import { cn } from "@/lib/utils";
@@ -14,11 +14,16 @@ type Props = {
   queryString: string;
 };
 
+const fontLabelCache = new Map<string, string>();
 function formatFontLabel(slug: string): string {
-  return slug
+  const cached = fontLabelCache.get(slug);
+  if (cached) return cached;
+  const label = slug
     .split("-")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+  fontLabelCache.set(slug, label);
+  return label;
 }
 
 function ItemPendingOverlay() {
@@ -32,29 +37,35 @@ function ItemPendingOverlay() {
   );
 }
 
-export function PresetListItem({ preset, isActive, queryString }: Props) {
+function PresetListItemImpl({ preset, isActive, queryString }: Props) {
   const href = `/feed/${preset.code}${queryString}`;
   const displayName = preset.name ?? preset.code.slice(0, 10);
   const colors = preset.colors;
   const fonts = preset.fonts;
-  const dots = colors ? [colors.primary, colors.chart1, colors.card] : [];
   const likes = preset.likesCount;
 
-  const [intent, setIntent] = useState(false);
+  const dots = useMemo(
+    () => (colors ? [colors.primary, colors.chart1, colors.card] : []),
+    [colors],
+  );
 
-  const fontCaption = fonts
-    ? fonts.heading === fonts.sans
+  const fontCaption = useMemo(() => {
+    if (!fonts) return null;
+    return fonts.heading === fonts.sans
       ? formatFontLabel(fonts.heading)
-      : `${formatFontLabel(fonts.heading)} · ${formatFontLabel(fonts.sans)}`
-    : null;
+      : `${formatFontLabel(fonts.heading)} · ${formatFontLabel(fonts.sans)}`;
+  }, [fonts]);
+
+  const [intent, setIntent] = useState(false);
+  const onIntent = useCallback(() => setIntent(true), []);
 
   return (
     <Link
       href={href}
       prefetch={intent ? null : false}
-      onMouseEnter={() => setIntent(true)}
-      onFocus={() => setIntent(true)}
-      onTouchStart={() => setIntent(true)}
+      onMouseEnter={onIntent}
+      onFocus={onIntent}
+      onTouchStart={onIntent}
       aria-current={isActive ? "page" : undefined}
       className={cn(
         "relative flex items-start gap-3 rounded-lg border px-2.5 py-2 transition-colors hover:bg-accent/40",
@@ -98,3 +109,5 @@ export function PresetListItem({ preset, isActive, queryString }: Props) {
     </Link>
   );
 }
+
+export const PresetListItem = memo(PresetListItemImpl);

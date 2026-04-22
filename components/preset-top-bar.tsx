@@ -17,12 +17,22 @@ type Props = {
   next: string | null;
 };
 
+const SHADCN_PREVIEW_BASE = "https://ui.shadcn.com/preview/radix/preview-02";
+const previewHref = (code: string) =>
+  `${SHADCN_PREVIEW_BASE}?preset=${encodeURIComponent(code)}`;
+
 export function PresetTopBar({ preset, prev, next }: Props) {
   const displayName = preset.name ?? preset.code.slice(0, 12);
   const shortCode = preset.code.slice(0, 8);
 
   return (
     <header className="sticky top-0 z-10 flex items-center gap-2 border-b bg-background/70 px-3 py-2 backdrop-blur">
+      {prev ? (
+        <link rel="prefetch" as="document" href={previewHref(prev)} />
+      ) : null}
+      {next ? (
+        <link rel="prefetch" as="document" href={previewHref(next)} />
+      ) : null}
       <PresetContextSync
         code={preset.code}
         presetId={preset.id}

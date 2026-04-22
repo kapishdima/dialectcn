@@ -4,6 +4,7 @@ import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useSelectedLayoutSegment } from "next/navigation";
 import { useQueryStates } from "nuqs";
+import { startTransition } from "react";
 import { fetchPresetsAction } from "@/app/(actions)/presets";
 import { ListWithPagination } from "@/components/list-with-pagination";
 import { PresetListItem } from "@/components/preset-list-item";
@@ -16,13 +17,13 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { authClient } from "@/lib/auth-client";
 import {
   PRESET_SORTS,
   PRESET_SOURCES,
   type PresetSort,
   type PresetView,
 } from "@/lib/domain/source-labels";
-import { authClient } from "@/lib/auth-client";
 import { feedFilterParsers, serializeFeedFilters } from "@/lib/feed-filters";
 import type { PresetWithColors } from "@/lib/services/presets";
 
@@ -51,6 +52,7 @@ export function PresetSidebar({ initialItems, initialCursor }: Props) {
   const isAuthed = Boolean(session?.user);
   const [filters, setFilters] = useQueryStates(feedFilterParsers, {
     clearOnDefault: true,
+    startTransition,
   });
 
   const queryString = serializeFeedFilters(filters);

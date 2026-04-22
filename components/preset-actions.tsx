@@ -9,7 +9,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useAtomValue } from "jotai";
-import { type ReactNode, useEffect, useRef } from "react";
+import { type ReactNode, useCallback, useEffect, useMemo, useRef } from "react";
 import { CopyStateIcon } from "@/components/copy-button/copy-button";
 import { InstallDialog } from "@/components/install-dialog";
 import { Button } from "@/components/ui/button";
@@ -33,11 +33,14 @@ export function PresetActions({
     copy(code);
   }, [trigger, code, copy]);
 
-  const shadcnCreateUrl = `https://ui.shadcn.com/create?preset=${encodeURIComponent(
-    code,
-  )}`;
+  const shadcnCreateUrl = useMemo(
+    () => `https://ui.shadcn.com/create?preset=${encodeURIComponent(code)}`,
+    [code],
+  );
 
-  const shareOnX = () => {
+  const onCopy = useCallback(() => copy(code), [copy, code]);
+
+  const shareOnX = useCallback(() => {
     const origin = typeof window !== "undefined" ? window.location.origin : "";
     const shareUrl = `${origin}/feed/${encodeURIComponent(code)}`;
     const text = `--preset=${code}`;
@@ -45,14 +48,14 @@ export function PresetActions({
       text,
     )}&url=${encodeURIComponent(shareUrl)}`;
     window.open(intent, "_blank", "noopener,noreferrer");
-  };
+  }, [code]);
 
   return (
     <div className="flex items-center gap-0.5">
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => copy(code)}
+        onClick={onCopy}
         aria-label="Copy preset code"
         title="Copy preset code"
       >
