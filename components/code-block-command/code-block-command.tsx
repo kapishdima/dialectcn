@@ -11,7 +11,7 @@ import {
   TabsIndicator,
   TabsList,
   TabsTrigger,
-} from "@/components/base/ui/tabs";
+} from "./tabs";
 import { CopyButton } from "@/components/copy-button/copy-button";
 
 export type PackageManager = "prompt" | "pnpm" | "yarn" | "npm" | "bun";
@@ -156,7 +156,7 @@ export function CodeBlockCommand({
         {tabsFiltered.map(([key, value]) => {
           return (
             <TabsContent key={key} value={key}>
-              <pre className="overflow-x-auto overscroll-x-contain p-4">
+              <pre className="overflow-x-auto overscroll-x-contain p-4 no-scrollbar">
                 <code
                   data-slot="code-block"
                   data-language="bash"
