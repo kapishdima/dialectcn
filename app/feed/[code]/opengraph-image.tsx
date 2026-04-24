@@ -1,9 +1,8 @@
 import { ImageResponse } from "next/og";
-import {
-  extractDarkVars,
-  getPresetByCode,
-  resolvePresetConfig,
-} from "@/lib/services/presets";
+import { decodePreset } from "shadcn/preset";
+import { buildRegistryTheme } from "@/lib/domain/preset-css";
+import { presetConfigToDesignSystem } from "@/lib/domain/design-system";
+import { getPresetByCode } from "@/lib/services/presets";
 
 export const runtime = "nodejs";
 export const alt = "dialectcn preset preview";
@@ -129,8 +128,16 @@ export default async function OgImage({
     const preset = await getPresetByCode(code);
     if (!preset) return brandedFallback();
 
-    const config = resolvePresetConfig(preset.code);
-    const raw = (await extractDarkVars(preset.code)) ?? {};
+    const config = decodePreset(preset.code);
+    const registry = config
+      ? buildRegistryTheme(presetConfigToDesignSystem(config))
+      : null;
+    const raw = registry
+      ? {
+          ...(registry.cssVars.theme ?? {}),
+          ...(registry.cssVars.dark ?? {}),
+        }
+      : {};
     const hex = (key: string, fb: string) => oklchToHex(raw[key], fb);
 
     const colors = {

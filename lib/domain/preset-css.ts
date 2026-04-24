@@ -1,3 +1,8 @@
+import { decodePreset, type PresetConfig } from "shadcn/preset";
+import { getBaseColor } from "./base-colors";
+import { getTheme, } from "./theme"
+import { DesignSystemConfig, presetConfigToDesignSystem } from "./design-system";
+
 export type RegistryThemeCssVars = {
   theme?: Record<string, string>;
   light?: Record<string, string>;
@@ -41,4 +46,134 @@ export function buildScopedCssText(
     }),
     buildCssRule(`.dark ${selector}, ${selector}.dark`, cssVars.dark),
   ].join("\n");
+}
+
+// Builds a registry:theme item from a design system config.
+export function buildRegistryTheme(config: DesignSystemConfig) {
+  const RADII = [
+    { name: "default", label: "Default", value: "" },
+    { name: "none", label: "None", value: "0" },
+    { name: "small", label: "Small", value: "0.45rem" },
+    { name: "medium", label: "Medium", value: "0.625rem" },
+    { name: "large", label: "Large", value: "0.875rem" },
+  ] as const
+
+  const baseColor = getBaseColor(config.baseColor)
+  const theme = getTheme(config.theme)
+
+  if (!baseColor || !theme) {
+    throw new Error(
+      `Base color "${config.baseColor}" or theme "${config.theme}" not found`
+    )
+  }
+
+  // Merge base color and theme CSS vars.
+  const lightVars: Record<string, string> = {
+    ...(baseColor.cssVars?.light as Record<string, string>),
+    ...(theme.cssVars?.light as Record<string, string>),
+  }
+  const darkVars: Record<string, string> = {
+    ...(baseColor.cssVars?.dark as Record<string, string>),
+    ...(theme.cssVars?.dark as Record<string, string>),
+  }
+  const themeVars: Record<string, string> = {}
+
+  // Apply chart color override.
+  const chartTheme = getTheme(config.chartColor)
+  if (chartTheme) {
+    const chartLight = chartTheme.cssVars?.light as Record<string, string>
+    const chartDark = chartTheme.cssVars?.dark as Record<string, string>
+    for (let i = 1; i <= 5; i++) {
+      const key = `chart-${i}`
+      if (chartLight?.[key]) lightVars[key] = chartLight[key]
+      if (chartDark?.[key]) darkVars[key] = chartDark[key]
+    }
+  }
+
+  // Apply menu accent transformation.
+  if (config.menuAccent === "bold") {
+    lightVars.accent = lightVars.primary
+    lightVars["accent-foreground"] = lightVars["primary-foreground"]
+    darkVars.accent = darkVars.primary
+    darkVars["accent-foreground"] = darkVars["primary-foreground"]
+    // lightVars["sidebar-accent"] = lightVars.primary
+    // lightVars["sidebar-accent-foreground"] = lightVars["primary-foreground"]
+    // darkVars["sidebar-accent"] = darkVars.primary
+    // darkVars["sidebar-accent-foreground"] = darkVars["primary-foreground"]
+  }
+
+  // Apply radius transformation.
+  if (config.radius && config.radius !== "default") {
+    const radius = RADII.find((r) => r.name === config.radius)
+    if (radius?.value) {
+      lightVars.radius = radius.value
+    }
+  }
+
+  return {
+    name: `${config.baseColor}-${config.theme}`,
+    type: "registry:theme" as const,
+    cssVars: {
+      theme: Object.keys(themeVars).length > 0 ? themeVars : undefined,
+      light: lightVars,
+      dark: darkVars,
+    },
+  }
+}
+
+export type BuiltTheme = ReturnType<typeof buildRegistryTheme>;
+
+const themeCache = new Map<string, BuiltTheme>();
+const presetCache = new Map<string, PresetConfig>();
+const scopedCssCache = new Map<string, string>();
+
+export function getDecodedPreset(code: string): PresetConfig | null {
+  const cached = presetCache.get(code);
+  if (cached) return cached;
+  const preset = decodePreset(code);
+  if (!preset) return null;
+  presetCache.set(code, preset);
+  return preset;
+}
+
+export function getBuiltTheme(code: string): BuiltTheme | null {
+  const cached = themeCache.get(code);
+  if (cached) return cached;
+  const preset = getDecodedPreset(code);
+  if (!preset) return null;
+  const effectiveRadius = preset.style === "lyra" ? "none" : preset.radius;
+  const theme = buildRegistryTheme(
+    presetConfigToDesignSystem({ ...preset, radius: effectiveRadius }),
+  );
+  themeCache.set(code, theme);
+  return theme;
+}
+
+export function getScopedCss(code: string, selector: string): string {
+  const key = `${code}|${selector}`;
+  const cached = scopedCssCache.get(key);
+  if (cached) return cached;
+  const theme = getBuiltTheme(code);
+  if (!theme) return "";
+  const text = buildScopedCssText(theme.cssVars, selector);
+  scopedCssCache.set(key, text);
+  return text;
+}
+
+export type PresetColors = {
+  primary: string;
+  card: string;
+  chart1: string;
+  destructive: string;
+};
+
+export function extractPresetColors(config: PresetConfig): PresetColors {
+  const { cssVars } = buildRegistryTheme(presetConfigToDesignSystem(config));
+  const merged = { ...(cssVars.theme ?? {}), ...(cssVars.light ?? {}) };
+  return {
+    primary: merged.primary ?? "oklch(0 0 0)",
+    chart1: merged["chart-1"] ?? "oklch(0.7 0 0)",
+    card: merged.card ?? "oklch(0.95 0.1 0)",
+    destructive: merged.destructive ?? "oklch(0.55 0.2 25)",
+  };
 }

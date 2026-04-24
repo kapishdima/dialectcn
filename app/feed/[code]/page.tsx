@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PresetTopBar } from "@/components/preset-top-bar";
-import { Preview02Frame } from "@/components/preview-02-frame";
 import { sourceLabel } from "@/lib/domain/source-labels";
 import {
   getAdjacentCodes,
@@ -53,9 +52,6 @@ export default async function PresetPreviewPage({
   if (!preset) notFound();
 
   return (
-    <div className="flex h-full min-h-0 flex-col">
-      <PresetTopBar preset={preset} prev={adjacent.prev} next={adjacent.next} />
-      <Preview02Frame code={preset.code} />
-    </div>
+    <PresetTopBar preset={preset} prev={adjacent.prev} next={adjacent.next} />
   );
 }
