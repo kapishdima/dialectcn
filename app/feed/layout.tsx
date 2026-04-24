@@ -1,10 +1,10 @@
+import { Analytics } from "@vercel/analytics/next";
 import { Suspense } from "react";
 import { FeedAside } from "@/components/feed-aside";
 import { Header } from "@/components/header";
 import { PresetSidebar } from "@/components/preset-sidebar";
+import { PreviewSurface } from "@/components/preview-surface";
 import { listPresetsWithColors } from "@/lib/services/presets";
-
-import { Analytics } from "@vercel/analytics/next";
 
 export default async function FeedLayout({
   children,
@@ -27,6 +27,7 @@ export default async function FeedLayout({
           </FeedAside>
           <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
             {children}
+            <PreviewSurface />
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { type PresetConfig } from "shadcn/preset";
+import { decodePreset, type PresetConfig } from "shadcn/preset";
 import { getBaseColor } from "./base-colors";
 import { getTheme, } from "./theme"
 import { DesignSystemConfig, presetConfigToDesignSystem } from "./design-system";
@@ -119,6 +119,45 @@ export function buildRegistryTheme(config: DesignSystemConfig) {
       dark: darkVars,
     },
   }
+}
+
+export type BuiltTheme = ReturnType<typeof buildRegistryTheme>;
+
+const themeCache = new Map<string, BuiltTheme>();
+const presetCache = new Map<string, PresetConfig>();
+const scopedCssCache = new Map<string, string>();
+
+export function getDecodedPreset(code: string): PresetConfig | null {
+  const cached = presetCache.get(code);
+  if (cached) return cached;
+  const preset = decodePreset(code);
+  if (!preset) return null;
+  presetCache.set(code, preset);
+  return preset;
+}
+
+export function getBuiltTheme(code: string): BuiltTheme | null {
+  const cached = themeCache.get(code);
+  if (cached) return cached;
+  const preset = getDecodedPreset(code);
+  if (!preset) return null;
+  const effectiveRadius = preset.style === "lyra" ? "none" : preset.radius;
+  const theme = buildRegistryTheme(
+    presetConfigToDesignSystem({ ...preset, radius: effectiveRadius }),
+  );
+  themeCache.set(code, theme);
+  return theme;
+}
+
+export function getScopedCss(code: string, selector: string): string {
+  const key = `${code}|${selector}`;
+  const cached = scopedCssCache.get(key);
+  if (cached) return cached;
+  const theme = getBuiltTheme(code);
+  if (!theme) return "";
+  const text = buildScopedCssText(theme.cssVars, selector);
+  scopedCssCache.set(key, text);
+  return text;
 }
 
 export type PresetColors = {

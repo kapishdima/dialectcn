@@ -2,6 +2,7 @@
 
 import { useSetAtom } from "jotai";
 import { useEffect } from "react";
+import { usePrewarmPresets } from "@/hooks/use-prewarm-presets";
 import { currentPresetAtom } from "@/lib/atoms/current-preset";
 
 type Props = {
@@ -17,6 +18,8 @@ export function PresetContextSync({ code, presetId, prev, next }: Props) {
   useEffect(() => {
     setCurrent({ code, presetId, prev, next });
   }, [code, presetId, prev, next, setCurrent]);
+
+  usePrewarmPresets([prev, next]);
 
   return null;
 }
