@@ -7,7 +7,7 @@ import {
   buildScopedCssText,
   type RegistryThemeCssVars,
 } from "@/lib/domain/preset-css";
-import { getPresetTheme } from "@/lib/domain/preset-themes";
+import { getPresetTheme } from "@/lib/domain/theme";
 import type { PresetSort, PresetSource } from "@/lib/domain/source-labels";
 import { getBaseColorVars } from "@/lib/services/base-colors";
 
