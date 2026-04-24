@@ -1,4 +1,4 @@
-import { and, desc, eq, lt, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, lt, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { like, preset } from "@/lib/db/schema";
 import type { PresetSummary } from "@/lib/services/presets";
@@ -41,9 +41,7 @@ export async function toggleLike(input: {
   }
 
   const [, updated] = await db.batch([
-    db
-      .insert(like)
-      .values({ userId: input.userId, presetId: input.presetId }),
+    db.insert(like).values({ userId: input.userId, presetId: input.presetId }),
     db
       .update(preset)
       .set({ likesCount: sql`${preset.likesCount} + 1` })
@@ -110,8 +108,75 @@ export async function listLikedByUser(input: {
   const nextCursor =
     hasMore && last ? `${last.likedAt.toISOString()}|${last.id}` : null;
 
-  const items: PresetSummary[] = page.map(({ likedAt: _likedAt, ...rest }) => rest);
+  const items: PresetSummary[] = page.map(
+    ({ likedAt: _likedAt, ...rest }) => rest,
+  );
   return { items, nextCursor };
+}
+
+export async function getRandomLikedCode(
+  userId: string,
+  exclude?: string,
+): Promise<string | null> {
+  const excludeWhere = exclude ? sql`${preset.code} <> ${exclude}` : undefined;
+  const rows = await db
+    .select({ code: preset.code })
+    .from(like)
+    .innerJoin(preset, eq(like.presetId, preset.id))
+    .where(
+      excludeWhere
+        ? and(eq(like.userId, userId), excludeWhere)
+        : eq(like.userId, userId),
+    )
+    .orderBy(sql`random()`)
+    .limit(1);
+  return rows[0]?.code ?? null;
+}
+
+export async function getAdjacentLikedCodes(
+  userId: string,
+  currentCode: string,
+): Promise<{ prev: string | null; next: string | null }> {
+  const [current] = await db
+    .select({ presetId: like.presetId, likedAt: like.createdAt })
+    .from(like)
+    .innerJoin(preset, eq(like.presetId, preset.id))
+    .where(and(eq(like.userId, userId), eq(preset.code, currentCode)))
+    .limit(1);
+  if (!current) return { prev: null, next: null };
+
+  const prevCondition = or(
+    gt(like.createdAt, current.likedAt),
+    and(
+      eq(like.createdAt, current.likedAt),
+      gt(like.presetId, current.presetId),
+    ),
+  );
+  const nextCondition = or(
+    lt(like.createdAt, current.likedAt),
+    and(
+      eq(like.createdAt, current.likedAt),
+      lt(like.presetId, current.presetId),
+    ),
+  );
+
+  const [prevRow] = await db
+    .select({ code: preset.code })
+    .from(like)
+    .innerJoin(preset, eq(like.presetId, preset.id))
+    .where(and(eq(like.userId, userId), prevCondition))
+    .orderBy(asc(like.createdAt), asc(like.presetId))
+    .limit(1);
+
+  const [nextRow] = await db
+    .select({ code: preset.code })
+    .from(like)
+    .innerJoin(preset, eq(like.presetId, preset.id))
+    .where(and(eq(like.userId, userId), nextCondition))
+    .orderBy(desc(like.createdAt), desc(like.presetId))
+    .limit(1);
+
+  return { prev: prevRow?.code ?? null, next: nextRow?.code ?? null };
 }
 
 export async function likedPresetIdsByUser(

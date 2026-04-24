@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PresetTopBar } from "@/components/preset-top-bar";
-import { sourceLabel } from "@/lib/domain/source-labels";
+import {
+  isPresetSort,
+  isPresetSource,
+  sourceLabel,
+} from "@/lib/domain/source-labels";
+import { getCurrentUser } from "@/lib/services/auth";
+import { getAdjacentLikedCodes } from "@/lib/services/likes";
 import {
   getAdjacentCodes,
   getPresetByCode,
@@ -9,6 +15,15 @@ import {
 } from "@/lib/services/presets";
 
 type PageParams = { code: string };
+type SearchParams = Record<string, string | string[] | undefined>;
+
+async function getAdjacentLikedForCurrentUser(
+  code: string,
+): Promise<{ prev: string | null; next: string | null }> {
+  const user = await getCurrentUser();
+  if (!user) return { prev: null, next: null };
+  return getAdjacentLikedCodes(user.id, code);
+}
 
 export async function generateStaticParams() {
   try {
@@ -41,13 +56,26 @@ export async function generateMetadata({
 
 export default async function PresetPreviewPage({
   params,
+  searchParams,
 }: {
   params: Promise<PageParams>;
+  searchParams: Promise<SearchParams>;
 }) {
   const { code } = await params;
+  const sp = await searchParams;
+  const sourceRaw = typeof sp.source === "string" ? sp.source : undefined;
+  const sortRaw = typeof sp.sort === "string" ? sp.sort : undefined;
+  const sort = sortRaw && isPresetSort(sortRaw) ? sortRaw : undefined;
+  const source = sourceRaw && isPresetSource(sourceRaw) ? sourceRaw : undefined;
+
+  const adjacentPromise =
+    sourceRaw === "likes"
+      ? getAdjacentLikedForCurrentUser(code)
+      : getAdjacentCodes(code, { source, sort });
+
   const [preset, adjacent] = await Promise.all([
     getPresetByCode(code),
-    getAdjacentCodes(code),
+    adjacentPromise,
   ]);
   if (!preset) notFound();
 

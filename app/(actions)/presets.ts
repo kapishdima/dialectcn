@@ -1,11 +1,11 @@
 "use server";
 
 import { decodePreset } from "shadcn/preset";
-import type { PresetSort, PresetView } from "@/lib/domain/source-labels";
-import { extractPresetColors } from "@/lib/domain/preset-css";
 import { extractPresetFonts } from "@/lib/domain/fonts";
+import { extractPresetColors } from "@/lib/domain/preset-css";
+import type { PresetSort, PresetView } from "@/lib/domain/source-labels";
 import { getCurrentUser } from "@/lib/services/auth";
-import { listLikedByUser } from "@/lib/services/likes";
+import { getRandomLikedCode, listLikedByUser } from "@/lib/services/likes";
 import {
   getRandomCode,
   listPresets,
@@ -58,7 +58,12 @@ export async function fetchPresetsAction(
 }
 
 export async function pickRandomPresetCodeAction(
-  exclude?: string,
+  input: { exclude?: string; source?: PresetView } = {},
 ): Promise<string | null> {
-  return getRandomCode(exclude);
+  if (input.source === "likes") {
+    const user = await getCurrentUser();
+    if (!user) return null;
+    return getRandomLikedCode(user.id, input.exclude);
+  }
+  return getRandomCode({ exclude: input.exclude, source: input.source });
 }

@@ -8,9 +8,11 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useQueryStates } from "nuqs";
 import { useTransition } from "react";
 import { pickRandomPresetCodeAction } from "@/app/(actions)/presets";
 import { Button } from "@/components/ui/button";
+import { feedFilterParsers } from "@/lib/feed-filters";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -24,10 +26,14 @@ const hrefFor = (code: string) => `/feed/${code}`;
 export function PresetNav({ currentCode, prev, next }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [filters] = useQueryStates(feedFilterParsers);
 
   const goRandom = () => {
     startTransition(async () => {
-      const code = await pickRandomPresetCodeAction(currentCode);
+      const code = await pickRandomPresetCodeAction({
+        exclude: currentCode,
+        source: filters.source ?? undefined,
+      });
       if (!code) return;
       const href = hrefFor(code);
       router.prefetch(href);

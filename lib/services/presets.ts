@@ -1,13 +1,13 @@
-import { and, desc, eq, lt, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, lt, or, sql } from "drizzle-orm";
 import { cache } from "react";
 import { decodePreset, encodePreset, type PresetConfig } from "shadcn/preset";
 import { db } from "@/lib/db/client";
 import { preset } from "@/lib/db/schema";
+import { extractPresetFonts, type PresetFonts } from "@/lib/domain/fonts";
 import {
   extractPresetColors,
   type PresetColors,
 } from "@/lib/domain/preset-css";
-import { extractPresetFonts, type PresetFonts } from "@/lib/domain/fonts";
 import type { PresetSort, PresetSource } from "@/lib/domain/source-labels";
 
 const FEED_PAGE_SIZE = 24;
@@ -73,9 +73,7 @@ function encodeFeedCursor(tie: string | number, id: string): string {
   return `${tie}|${id}`;
 }
 
-function decodeFeedCursor(
-  cursor: string,
-): { tie: string; id: string } | null {
+function decodeFeedCursor(cursor: string): { tie: string; id: string } | null {
   const idx = cursor.lastIndexOf("|");
   if (idx <= 0 || idx === cursor.length - 1) return null;
   return { tie: cursor.slice(0, idx), id: cursor.slice(idx + 1) };
@@ -155,31 +153,79 @@ export const getPresetByCode = cache(
   },
 );
 
+export type AdjacentFilters = {
+  source?: PresetSource;
+  sort?: PresetSort;
+};
+
 export const getAdjacentCodes = cache(
   async (
     currentCode: string,
+    filters: AdjacentFilters = {},
   ): Promise<{ prev: string | null; next: string | null }> => {
-    const result = await db.execute<{
-      prev: string | null;
-      next: string | null;
-    }>(sql`
-      SELECT
-        (SELECT code FROM ${preset} WHERE id > p.id ORDER BY id ASC LIMIT 1) AS prev,
-        (SELECT code FROM ${preset} WHERE id < p.id ORDER BY id DESC LIMIT 1) AS next
-      FROM ${preset} AS p
-      WHERE p.code = ${currentCode}
-      LIMIT 1
-    `);
-    const row = result.rows[0];
-    return { prev: row?.prev ?? null, next: row?.next ?? null };
+    const sort = filters.sort ?? "popular";
+    if (sort === "random") return { prev: null, next: null };
+
+    const [current] = await db
+      .select({
+        id: preset.id,
+        createdAt: preset.createdAt,
+        likesCount: preset.likesCount,
+      })
+      .from(preset)
+      .where(eq(preset.code, currentCode))
+      .limit(1);
+    if (!current) return { prev: null, next: null };
+
+    const sourceWhere = filters.source
+      ? eq(preset.source, filters.source)
+      : undefined;
+
+    const tieCol = sort === "newest" ? preset.createdAt : preset.likesCount;
+    const tieVal = sort === "newest" ? current.createdAt : current.likesCount;
+
+    const prevCondition = or(
+      gt(tieCol, tieVal),
+      and(eq(tieCol, tieVal), gt(preset.id, current.id)),
+    );
+    const nextCondition = or(
+      lt(tieCol, tieVal),
+      and(eq(tieCol, tieVal), lt(preset.id, current.id)),
+    );
+
+    const [prevRow] = await db
+      .select({ code: preset.code })
+      .from(preset)
+      .where(sourceWhere ? and(sourceWhere, prevCondition) : prevCondition)
+      .orderBy(asc(tieCol), asc(preset.id))
+      .limit(1);
+
+    const [nextRow] = await db
+      .select({ code: preset.code })
+      .from(preset)
+      .where(sourceWhere ? and(sourceWhere, nextCondition) : nextCondition)
+      .orderBy(desc(tieCol), desc(preset.id))
+      .limit(1);
+
+    return { prev: prevRow?.code ?? null, next: nextRow?.code ?? null };
   },
 );
 
-export async function getRandomCode(exclude?: string): Promise<string | null> {
+export async function getRandomCode(
+  options: { exclude?: string; source?: PresetSource } = {},
+): Promise<string | null> {
+  const { exclude, source } = options;
+  const excludeWhere = exclude ? sql`${preset.code} <> ${exclude}` : undefined;
+  const sourceWhere = source ? eq(preset.source, source) : undefined;
+  const where =
+    excludeWhere && sourceWhere
+      ? and(excludeWhere, sourceWhere)
+      : (excludeWhere ?? sourceWhere ?? undefined);
+
   const rows = await db
     .select({ code: preset.code })
     .from(preset)
-    .where(exclude ? sql`${preset.code} <> ${exclude}` : undefined)
+    .where(where)
     .orderBy(sql`random()`)
     .limit(1);
   return rows[0]?.code ?? null;

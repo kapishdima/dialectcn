@@ -3,9 +3,11 @@
 import { ShuffleIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useRouter } from "next/navigation";
+import { useQueryStates } from "nuqs";
 import { useTransition } from "react";
 import { pickRandomPresetCodeAction } from "@/app/(actions)/presets";
 import { Button } from "@/components/ui/button";
+import { feedFilterParsers } from "@/lib/feed-filters";
 import { cn } from "@/lib/utils";
 
 type ButtonProps = React.ComponentProps<typeof Button>;
@@ -25,10 +27,13 @@ export function RandomPresetButton({
 }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [filters] = useQueryStates(feedFilterParsers);
 
   const go = () => {
     startTransition(async () => {
-      const code = await pickRandomPresetCodeAction();
+      const code = await pickRandomPresetCodeAction({
+        source: filters.source ?? undefined,
+      });
       if (code) router.push(`/feed/${code}`);
     });
   };

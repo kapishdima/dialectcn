@@ -2,6 +2,7 @@
 
 import { useAtomValue, useSetAtom } from "jotai";
 import { useRouter } from "next/navigation";
+import { useQueryStates } from "nuqs";
 import { useEffect } from "react";
 import { pickRandomPresetCodeAction } from "@/app/(actions)/presets";
 import { currentPresetAtom } from "@/lib/atoms/current-preset";
@@ -10,6 +11,7 @@ import {
   installDialogOpenAtom,
   likeTriggerAtom,
 } from "@/lib/atoms/preset-ui";
+import { feedFilterParsers } from "@/lib/feed-filters";
 
 const HOTKEYS = new Set(["j", "k", "r", "c", "i", "o", "l"]);
 
@@ -27,6 +29,7 @@ export function GlobalHotkeys() {
   const bumpLike = useSetAtom(likeTriggerAtom);
   const bumpCopy = useSetAtom(copyTriggerAtom);
   const router = useRouter();
+  const [filters] = useQueryStates(feedFilterParsers);
 
   useEffect(() => {
     if (!preset) return;
@@ -48,7 +51,10 @@ export function GlobalHotkeys() {
           if (preset.next) router.push(`/feed/${preset.next}`);
           break;
         case "r":
-          pickRandomPresetCodeAction(preset.code).then((code) => {
+          pickRandomPresetCodeAction({
+            exclude: preset.code,
+            source: filters.source ?? undefined,
+          }).then((code) => {
             if (code) router.push(`/feed/${code}`);
           });
           break;
@@ -73,7 +79,7 @@ export function GlobalHotkeys() {
 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [preset, router, setInstallOpen, bumpLike, bumpCopy]);
+  }, [preset, router, setInstallOpen, bumpLike, bumpCopy, filters.source]);
 
   return null;
 }

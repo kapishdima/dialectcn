@@ -4,7 +4,7 @@ import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useSelectedLayoutSegment } from "next/navigation";
 import { useQueryStates } from "nuqs";
-import { startTransition } from "react";
+import { startTransition, useRef } from "react";
 import { fetchPresetsAction } from "@/app/(actions)/presets";
 import { ListWithPagination } from "@/components/list-with-pagination";
 import { PresetListItem } from "@/components/preset-list-item";
@@ -17,6 +17,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useScrollActiveIntoView } from "@/hooks/use-scroll-active-into-view";
 import { authClient } from "@/lib/auth-client";
 import {
   PRESET_SORTS,
@@ -48,6 +49,8 @@ const SORT_LABELS: Record<PresetSort, string> = {
 
 export function PresetSidebar({ initialItems, initialCursor }: Props) {
   const activeCode = useSelectedLayoutSegment();
+  const rootRef = useRef<HTMLDivElement>(null);
+  useScrollActiveIntoView(rootRef, activeCode);
   const { data: session } = authClient.useSession();
   const isAuthed = Boolean(session?.user);
   const [filters, setFilters] = useQueryStates(feedFilterParsers, {
@@ -64,7 +67,7 @@ export function PresetSidebar({ initialItems, initialCursor }: Props) {
   const setSort = (value: PresetSort) => setFilters({ sort: value });
 
   return (
-    <div className="flex h-full flex-col ">
+    <div ref={rootRef} className="flex h-full flex-col ">
       <div
         data-id="preset-sidebar-top"
         className="sticky top-0 z-10 flex items-center gap-2 bg-background px-2 py-2.5 border-b border-border"
