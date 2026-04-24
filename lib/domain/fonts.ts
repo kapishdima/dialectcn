@@ -1,4 +1,5 @@
 import { type RegistryItem } from "shadcn/schema"
+import { type PresetConfig } from "shadcn/preset"
 
 import { FONT_DEFINITIONS, type FontDefinition } from "@/lib/fonts"
 
@@ -39,3 +40,16 @@ export const fontValues = bodyFonts.map((f) => f.name.replace("font-", "")) as [
     ...string[],
 ]
 export const fontHeadingValues = ["inherit", ...fontValues] as const
+
+export type PresetFonts = {
+    sans: string;
+    heading: string;
+};
+
+export function extractPresetFonts(config: PresetConfig): PresetFonts {
+    return {
+        sans: config.font,
+        heading:
+            config.fontHeading === "inherit" ? config.font : config.fontHeading,
+    }
+}

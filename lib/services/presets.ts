@@ -4,146 +4,34 @@ import { decodePreset, encodePreset, type PresetConfig } from "shadcn/preset";
 import { db } from "@/lib/db/client";
 import { preset } from "@/lib/db/schema";
 import {
-  buildScopedCssText,
-  type RegistryThemeCssVars,
+  extractPresetColors,
+  type PresetColors,
 } from "@/lib/domain/preset-css";
-import { getPresetTheme } from "@/lib/domain/theme";
+import { extractPresetFonts, type PresetFonts } from "@/lib/domain/fonts";
 import type { PresetSort, PresetSource } from "@/lib/domain/source-labels";
-import { getBaseColorVars } from "@/lib/services/base-colors";
-
-const CHART_KEYS = ["chart-1", "chart-2", "chart-3", "chart-4", "chart-5"];
-
-async function resolvePresetVars(
-  config: PresetConfig,
-): Promise<RegistryThemeCssVars> {
-  const base = await getBaseColorVars(config.baseColor);
-  const theme = getPresetTheme(config.theme);
-  const chart = config.chartColor
-    ? getPresetTheme(config.chartColor)
-    : undefined;
-
-  const light: Record<string, string> = {
-    ...(base.light ?? {}),
-    ...(theme?.cssVars.light ?? {}),
-  };
-  const dark: Record<string, string> = {
-    ...(base.dark ?? {}),
-    ...(theme?.cssVars.dark ?? {}),
-  };
-
-  if (chart) {
-    const chartLight = chart.cssVars.light as Record<string, string>;
-    const chartDark = chart.cssVars.dark as Record<string, string>;
-    for (const key of CHART_KEYS) {
-      if (chartLight[key]) light[key] = chartLight[key];
-      if (chartDark[key]) dark[key] = chartDark[key];
-    }
-  }
-
-  return { theme: base.theme, light, dark };
-}
 
 const FEED_PAGE_SIZE = 24;
 const FEATURED_BRAND_SLUGS = ["vercel", "claude", "linear", "stripe"];
-
-const RADIUS_REM: Record<PresetConfig["radius"], string> = {
-  none: "0rem",
-  small: "0.25rem",
-  default: "0.5rem",
-  medium: "0.625rem",
-  large: "0.75rem",
-};
-
-function applyRadius(
-  vars: RegistryThemeCssVars,
-  radius: PresetConfig["radius"],
-): RegistryThemeCssVars {
-  const radiusValue = RADIUS_REM[radius];
-  return {
-    theme: { ...(vars.theme ?? {}), radius: radiusValue },
-    light: { ...(vars.light ?? {}), radius: radiusValue },
-    dark: { ...(vars.dark ?? {}) },
-  };
-}
-
-export async function buildPresetCss(
-  code: string,
-  selector: string,
-): Promise<string | null> {
-  const config = decodePreset(code);
-  if (!config) return null;
-  const cssVars = await resolvePresetVars(config);
-  const withRadius = applyRadius(cssVars, config.radius);
-  return buildScopedCssText(withRadius, selector);
-}
-
-export function resolvePresetConfig(code: string): PresetConfig | null {
-  return decodePreset(code);
-}
-
-export type PresetColors = {
-  primary: string;
-  card: string;
-  chart1: string;
-  destructive: string;
-};
-
-export type PresetFonts = {
-  sans: string;
-  heading: string;
-};
 
 export type PresetWithColors = PresetSummary & {
   colors: PresetColors | null;
   fonts: PresetFonts | null;
 };
 
-export async function extractColors(
-  code: string,
-): Promise<PresetColors | null> {
-  const config = decodePreset(code);
-  if (!config) return null;
-  const cssVars = await resolvePresetVars(config);
-  const merged = { ...(cssVars.theme ?? {}), ...(cssVars.light ?? {}) };
-  return {
-    primary: merged.primary ?? "oklch(0 0 0)",
-    chart1: merged["chart-1"] ?? "oklch(0.7 0 0)",
-    card: merged.card ?? "oklch(0.95 0.1 0)",
-    destructive: merged.destructive ?? "oklch(0.55 0.2 25)",
-  };
-}
-
-export async function extractDarkVars(
-  code: string,
-): Promise<Record<string, string> | null> {
-  const config = decodePreset(code);
-  if (!config) return null;
-  const cssVars = await resolvePresetVars(config);
-  return { ...(cssVars.theme ?? {}), ...(cssVars.dark ?? {}) };
-}
-
-export function extractFonts(code: string): PresetFonts | null {
-  const config = decodePreset(code);
-  if (!config) return null;
-  return {
-    sans: config.font,
-    heading:
-      config.fontHeading === "inherit" ? config.font : config.fontHeading,
-  };
-}
-
 export const listPresetsWithColors = cache(
   async (
     filters: ListFilters = {},
   ): Promise<{ items: PresetWithColors[]; nextCursor: string | null }> => {
     const { items, nextCursor } = await listPresets(filters);
-    const enriched = await Promise.all(
-      items.map(async (p) => ({
+    const enriched = items.map((p) => {
+      const config = decodePreset(p.code);
+      if (!config) return { ...p, colors: null, fonts: null };
+      return {
         ...p,
-        colors: await extractColors(p.code),
-        fonts: extractFonts(p.code),
-      })),
-    );
+        colors: extractPresetColors(config),
+        fonts: extractPresetFonts(config),
+      };
+    });
     return { items: enriched, nextCursor };
   },
 );

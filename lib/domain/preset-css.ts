@@ -1,6 +1,7 @@
+import { type PresetConfig } from "shadcn/preset";
 import { getBaseColor } from "./base-colors";
 import { getTheme, } from "./theme"
-import { DesignSystemConfig } from "./design-system";
+import { DesignSystemConfig, presetConfigToDesignSystem } from "./design-system";
 
 export type RegistryThemeCssVars = {
   theme?: Record<string, string>;
@@ -118,4 +119,22 @@ export function buildRegistryTheme(config: DesignSystemConfig) {
       dark: darkVars,
     },
   }
+}
+
+export type PresetColors = {
+  primary: string;
+  card: string;
+  chart1: string;
+  destructive: string;
+};
+
+export function extractPresetColors(config: PresetConfig): PresetColors {
+  const { cssVars } = buildRegistryTheme(presetConfigToDesignSystem(config));
+  const merged = { ...(cssVars.theme ?? {}), ...(cssVars.light ?? {}) };
+  return {
+    primary: merged.primary ?? "oklch(0 0 0)",
+    chart1: merged["chart-1"] ?? "oklch(0.7 0 0)",
+    card: merged.card ?? "oklch(0.95 0.1 0)",
+    destructive: merged.destructive ?? "oklch(0.55 0.2 25)",
+  };
 }

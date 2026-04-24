@@ -3,10 +3,7 @@
 import * as React from "react";
 
 import { buildRegistryTheme, buildThemeCssText } from "@/lib/domain/preset-css";
-import {
-  DEFAULT_CONFIG,
-  type DesignSystemConfig,
-} from "@/lib/domain/design-system";
+import { presetConfigToDesignSystem } from "@/lib/domain/design-system";
 
 import { FONTS } from "@/lib/fonts";
 import { useCurrentPreset } from "@/hooks/use-current-preset";
@@ -30,17 +27,17 @@ export function DesignSystemProvider({
   children: React.ReactNode;
 }) {
   const [isReady, setIsReady] = React.useState(false);
+  const preset = useCurrentPreset();
   const {
     style,
     theme,
     font,
     fontHeading,
     baseColor,
-    chartColor,
-    menuAccent,
     menuColor,
     radius,
-  } = useCurrentPreset() || {};
+  } = preset || {};
+
   const effectiveRadius = style === "lyra" ? "none" : radius;
   const selectedFont = React.useMemo(
     () => FONTS.find((fontOption) => fontOption.value === font),
@@ -127,21 +124,14 @@ export function DesignSystemProvider({
   ]);
 
   const registryTheme = React.useMemo(() => {
-    if (!baseColor || !theme || !menuAccent || !effectiveRadius) {
+    if (!preset || !effectiveRadius) {
       return null;
     }
 
-    const config: DesignSystemConfig = {
-      ...DEFAULT_CONFIG,
-      baseColor,
-      theme,
-      chartColor,
-      menuAccent,
-      radius: effectiveRadius,
-    };
-
-    return buildRegistryTheme(config);
-  }, [baseColor, theme, chartColor, menuAccent, effectiveRadius]);
+    return buildRegistryTheme(
+      presetConfigToDesignSystem({ ...preset, radius: effectiveRadius }),
+    );
+  }, [preset, effectiveRadius]);
 
   // Use useLayoutEffect for synchronous CSS var updates.
   React.useLayoutEffect(() => {

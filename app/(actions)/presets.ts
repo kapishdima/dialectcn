@@ -1,11 +1,12 @@
 "use server";
 
+import { decodePreset } from "shadcn/preset";
 import type { PresetSort, PresetView } from "@/lib/domain/source-labels";
+import { extractPresetColors } from "@/lib/domain/preset-css";
+import { extractPresetFonts } from "@/lib/domain/fonts";
 import { getCurrentUser } from "@/lib/services/auth";
 import { listLikedByUser } from "@/lib/services/likes";
 import {
-  extractColors,
-  extractFonts,
   getRandomCode,
   listPresets,
   type PresetSummary,
@@ -23,14 +24,16 @@ type FetchPresetsResult = {
   nextCursor: string | null;
 };
 
-async function enrichPresets(items: PresetSummary[]): Promise<PresetWithColors[]> {
-  return Promise.all(
-    items.map(async (p) => ({
+function enrichPresets(items: PresetSummary[]): PresetWithColors[] {
+  return items.map((p) => {
+    const config = decodePreset(p.code);
+    if (!config) return { ...p, colors: null, fonts: null };
+    return {
       ...p,
-      colors: await extractColors(p.code),
-      fonts: extractFonts(p.code),
-    })),
-  );
+      colors: extractPresetColors(config),
+      fonts: extractPresetFonts(config),
+    };
+  });
 }
 
 export async function fetchPresetsAction(
@@ -43,7 +46,7 @@ export async function fetchPresetsAction(
       userId: user.id,
       cursor: input.cursor,
     });
-    return { items: await enrichPresets(items), nextCursor };
+    return { items: enrichPresets(items), nextCursor };
   }
 
   const { items, nextCursor } = await listPresets({
@@ -51,7 +54,7 @@ export async function fetchPresetsAction(
     sort: input.sort,
     cursor: input.cursor,
   });
-  return { items: await enrichPresets(items), nextCursor };
+  return { items: enrichPresets(items), nextCursor };
 }
 
 export async function pickRandomPresetCodeAction(

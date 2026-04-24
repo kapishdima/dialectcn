@@ -1,8 +1,9 @@
 import z from "zod";
+import { type PresetConfig } from "shadcn/preset";
 import { STYLES } from "./styles";
 import { iconLibraries, IconLibraryName } from "shadcn/icons";
-import { BASE_COLORS, BaseColorName, ThemeName } from "./base-colors";
-import { ChartColorName, THEMES } from "./theme";
+import { BASE_COLORS, BaseColorName, } from "./base-colors";
+import { ChartColorName, THEMES, ThemeName } from "./theme";
 import { fontHeadingValues, fontValues } from "./fonts";
 import { MENU_ACCENTS, MENU_COLORS, MenuAccentValue, MenuColorValue } from "./menu";
 import { RADII, RadiusValue } from "./radius";
@@ -64,7 +65,7 @@ export const designSystemConfigSchema = z
 export type DesignSystemConfig = z.infer<typeof designSystemConfigSchema>
 
 export const DEFAULT_CONFIG: DesignSystemConfig = {
-    base: "radix",
+    base: "base",
     style: "nova",
     baseColor: "neutral",
     theme: "neutral",
@@ -78,4 +79,19 @@ export const DEFAULT_CONFIG: DesignSystemConfig = {
     menuColor: "default",
     radius: "default",
     template: "next",
+}
+
+export function presetConfigToDesignSystem(config: PresetConfig): DesignSystemConfig {
+    return {
+        ...DEFAULT_CONFIG,
+        baseColor: config.baseColor,
+        theme: config.theme,
+        chartColor: config.chartColor ?? "neutral",
+        menuAccent: config.menuAccent,
+        radius: config.radius,
+        font: config.font,
+        fontHeading: config.fontHeading,
+        iconLibrary: config.iconLibrary,
+        style: config.style,
+    }
 }
