@@ -1,42 +1,25 @@
 "use client";
 
+import clsx from "clsx";
 import * as React from "react";
-
-import { buildRegistryTheme, buildThemeCssText } from "@/lib/domain/preset-css";
-import { presetConfigToDesignSystem } from "@/lib/domain/design-system";
-
-import { FONTS } from "@/lib/fonts";
 import { useCurrentPreset } from "@/hooks/use-current-preset";
+import { presetConfigToDesignSystem } from "@/lib/domain/design-system";
+import {
+  buildRegistryTheme,
+  buildScopedCssText,
+} from "@/lib/domain/preset-css";
+import { FONTS } from "@/lib/fonts";
 
-const THEME_STYLE_ELEMENT_ID = "design-system-theme-vars";
-const MANAGED_BODY_CLASS_PREFIXES = ["style-", "base-color-"] as const;
-
-function removeManagedBodyClasses(body: Element) {
-  for (const className of Array.from(body.classList)) {
-    if (
-      MANAGED_BODY_CLASS_PREFIXES.some((prefix) => className.startsWith(prefix))
-    ) {
-      body.classList.remove(className);
-    }
-  }
-}
+const PREVIEW_CONTAINER_SELECTOR = "[data-preview-container]";
 
 export function DesignSystemProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [isReady, setIsReady] = React.useState(false);
   const preset = useCurrentPreset();
-  const {
-    style,
-    theme,
-    font,
-    fontHeading,
-    baseColor,
-    menuColor,
-    radius,
-  } = preset || {};
+  const { style, theme, font, fontHeading, baseColor, menuColor, radius } =
+    preset || {};
 
   const effectiveRadius = style === "lyra" ? "none" : radius;
   const selectedFont = React.useMemo(
@@ -50,78 +33,6 @@ export function DesignSystemProvider({
 
     return FONTS.find((fontOption) => fontOption.value === fontHeading);
   }, [font, fontHeading, selectedFont]);
-  const initialFontSansRef = React.useRef<string | null>(null);
-  const initialFontHeadingRef = React.useRef<string | null>(null);
-
-  React.useEffect(() => {
-    initialFontSansRef.current =
-      document.documentElement.style.getPropertyValue("--font-sans");
-    initialFontHeadingRef.current =
-      document.documentElement.style.getPropertyValue("--font-heading");
-
-    return () => {
-      removeManagedBodyClasses(document.body);
-      document.getElementById(THEME_STYLE_ELEMENT_ID)?.remove();
-
-      if (initialFontSansRef.current) {
-        document.documentElement.style.setProperty(
-          "--font-sans",
-          initialFontSansRef.current,
-        );
-      } else {
-        document.documentElement.style.removeProperty("--font-sans");
-      }
-
-      if (initialFontHeadingRef.current) {
-        document.documentElement.style.setProperty(
-          "--font-heading",
-          initialFontHeadingRef.current,
-        );
-      } else {
-        document.documentElement.style.removeProperty("--font-heading");
-      }
-    };
-  }, []);
-
-  // Use useLayoutEffect for synchronous style updates to prevent flash.
-  React.useLayoutEffect(() => {
-    if (!style || !theme || !font || !baseColor) {
-      return;
-    }
-
-    const body = document.body;
-
-    // Iterate over a snapshot so removals do not affect traversal.
-    removeManagedBodyClasses(body);
-    body.classList.add(`style-${style}`, `base-color-${baseColor}`);
-
-    // Update font.
-    // Always set --font-sans for the preview so the selected font is visible.
-    // The font type (sans/serif/mono) is metadata for the CLI updater.
-    if (selectedFont) {
-      document.documentElement.style.setProperty(
-        "--font-sans",
-        selectedFont.font.style.fontFamily,
-      );
-    }
-
-    if (selectedHeadingFont) {
-      document.documentElement.style.setProperty(
-        "--font-heading",
-        selectedHeadingFont.font.style.fontFamily,
-      );
-    }
-
-    setIsReady(true);
-  }, [
-    style,
-    theme,
-    font,
-    fontHeading,
-    baseColor,
-    selectedFont,
-    selectedHeadingFont,
-  ]);
 
   const registryTheme = React.useMemo(() => {
     if (!preset || !effectiveRadius) {
@@ -133,29 +44,11 @@ export function DesignSystemProvider({
     );
   }, [preset, effectiveRadius]);
 
-  // Use useLayoutEffect for synchronous CSS var updates.
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
   React.useLayoutEffect(() => {
-    if (!registryTheme || !registryTheme.cssVars) {
-      return;
-    }
-
-    let styleElement = document.getElementById(
-      THEME_STYLE_ELEMENT_ID,
-    ) as HTMLStyleElement | null;
-
-    if (!styleElement) {
-      styleElement = document.createElement("style");
-      styleElement.id = THEME_STYLE_ELEMENT_ID;
-      document.head.appendChild(styleElement);
-    }
-
-    styleElement.textContent = buildThemeCssText(registryTheme.cssVars);
-  }, [registryTheme]);
-
-  // Handle menu color inversion by adding/removing dark class to elements with cn-menu-target.
-  // useLayoutEffect to apply classes synchronously before paint, avoiding flash.
-  React.useLayoutEffect(() => {
-    if (!menuColor) {
+    const container = containerRef.current;
+    if (!container || !menuColor) {
       return;
     }
 
@@ -167,7 +60,7 @@ export function DesignSystemProvider({
     let frameId = 0;
 
     const updateMenuElements = () => {
-      const allElements = document.querySelectorAll<HTMLElement>(
+      const allElements = container.querySelectorAll<HTMLElement>(
         ".cn-menu-target, [data-menu-translucent]",
       );
 
@@ -175,7 +68,6 @@ export function DesignSystemProvider({
         return;
       }
 
-      // Disable transitions while toggling classes.
       allElements.forEach((element) => {
         element.style.transition = "none";
       });
@@ -201,8 +93,7 @@ export function DesignSystemProvider({
         }
       });
 
-      // Force a reflow, then re-enable transitions.
-      void document.body.offsetHeight;
+      void container.offsetHeight;
       allElements.forEach((element) => {
         element.style.transition = "";
       });
@@ -219,15 +110,13 @@ export function DesignSystemProvider({
       });
     };
 
-    // Update existing menu elements.
     updateMenuElements();
 
-    // Watch for new menu elements being added to the DOM.
     const observer = new MutationObserver(() => {
       scheduleMenuUpdate();
     });
 
-    observer.observe(document.body, {
+    observer.observe(container, {
       childList: true,
       subtree: true,
     });
@@ -240,9 +129,46 @@ export function DesignSystemProvider({
     };
   }, [menuColor]);
 
-  if (!isReady) {
+  if (
+    !preset ||
+    !style ||
+    !theme ||
+    !font ||
+    !baseColor ||
+    !registryTheme?.cssVars
+  ) {
     return null;
   }
 
-  return <>{children}</>;
+  const scopedCss = buildScopedCssText(
+    registryTheme.cssVars,
+    PREVIEW_CONTAINER_SELECTOR,
+  );
+
+  const inlineStyle: React.CSSProperties = {};
+  if (selectedFont) {
+    (inlineStyle as Record<string, string>)["--font-sans"] =
+      selectedFont.font.style.fontFamily;
+  }
+  if (selectedHeadingFont) {
+    (inlineStyle as Record<string, string>)["--font-heading"] =
+      selectedHeadingFont.font.style.fontFamily;
+  }
+
+  return (
+    <div
+      ref={containerRef}
+      data-preview-container
+      className={clsx(
+        `style-${style}`,
+        `base-color-${baseColor}`,
+        "relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
+      )}
+      style={inlineStyle}
+    >
+      {/* biome-ignore lint/security/noDangerouslySetInnerHtml: scoped preset CSS contains no user input */}
+      <style dangerouslySetInnerHTML={{ __html: scopedCss }} />
+      {children}
+    </div>
+  );
 }

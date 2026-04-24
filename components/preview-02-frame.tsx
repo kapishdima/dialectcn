@@ -20,15 +20,8 @@ export function Preview02Frame({ code }: { code: string }) {
   }
 
   return (
-    <div
-      className={clsx(
-        "relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
-        `style-${config?.style}`,
-      )}
-    >
-      <DesignSystemProvider>
-        <Preview02Example />
-      </DesignSystemProvider>
-    </div>
+    <DesignSystemProvider>
+      <Preview02Example />
+    </DesignSystemProvider>
   );
 }
