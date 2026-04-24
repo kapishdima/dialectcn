@@ -5,6 +5,7 @@ import { Select as SelectPrimitive } from "@base-ui/react/select";
 
 import { cn } from "@/lib/utils";
 import { IconPlaceholder } from "@/components/base/ui/icon-placeholder";
+import { usePreviewContainer } from "@/hooks/use-preview-container";
 
 const Select = SelectPrimitive.Root;
 
@@ -77,9 +78,7 @@ function SelectContent({
     SelectPrimitive.Positioner.Props,
     "align" | "alignOffset" | "side" | "sideOffset" | "alignItemWithTrigger"
   >) {
-  const container = document.querySelector<HTMLElement>(
-    "[data-preview-container]",
-  );
+  const container = usePreviewContainer();
 
   return (
     <SelectPrimitive.Portal container={container}>
