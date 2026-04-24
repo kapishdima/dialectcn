@@ -11,6 +11,7 @@ import {
   helpOpenAtom,
   installDialogOpenAtom,
   likeTriggerAtom,
+  sidebarHiddenAtom,
 } from "@/lib/atoms/preset-ui";
 import { feedFilterParsers } from "@/lib/feed-filters";
 
@@ -28,22 +29,34 @@ export function GlobalHotkeys() {
   const preset = useAtomValue(currentPresetAtom);
   const setInstallOpen = useSetAtom(installDialogOpenAtom);
   const setHelpOpen = useSetAtom(helpOpenAtom);
+  const setSidebarHidden = useSetAtom(sidebarHiddenAtom);
   const bumpLike = useSetAtom(likeTriggerAtom);
   const bumpCopy = useSetAtom(copyTriggerAtom);
   const router = useRouter();
   const [filters] = useQueryStates(feedFilterParsers);
 
   useEffect(() => {
-    function onHelpKey(e: KeyboardEvent) {
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
+    function onGlobalKey(e: KeyboardEvent) {
       if (isTypingTarget(e.target)) return;
-      if (e.key !== "?") return;
-      e.preventDefault();
-      setHelpOpen((open) => !open);
+
+      if ((e.metaKey || e.ctrlKey) && !e.altKey && !e.shiftKey) {
+        if (e.key.toLowerCase() === "b") {
+          e.preventDefault();
+          setSidebarHidden((hidden) => !hidden);
+        }
+        return;
+      }
+
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+      if (e.key === "?") {
+        e.preventDefault();
+        setHelpOpen((open) => !open);
+      }
     }
-    window.addEventListener("keydown", onHelpKey);
-    return () => window.removeEventListener("keydown", onHelpKey);
-  }, [setHelpOpen]);
+    window.addEventListener("keydown", onGlobalKey);
+    return () => window.removeEventListener("keydown", onGlobalKey);
+  }, [setHelpOpen, setSidebarHidden]);
 
   useEffect(() => {
     if (!preset) return;
