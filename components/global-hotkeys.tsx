@@ -8,6 +8,7 @@ import { pickRandomPresetCodeAction } from "@/app/(actions)/presets";
 import { currentPresetAtom } from "@/lib/atoms/current-preset";
 import {
   copyTriggerAtom,
+  helpOpenAtom,
   installDialogOpenAtom,
   likeTriggerAtom,
 } from "@/lib/atoms/preset-ui";
@@ -26,10 +27,23 @@ function isTypingTarget(target: EventTarget | null): boolean {
 export function GlobalHotkeys() {
   const preset = useAtomValue(currentPresetAtom);
   const setInstallOpen = useSetAtom(installDialogOpenAtom);
+  const setHelpOpen = useSetAtom(helpOpenAtom);
   const bumpLike = useSetAtom(likeTriggerAtom);
   const bumpCopy = useSetAtom(copyTriggerAtom);
   const router = useRouter();
   const [filters] = useQueryStates(feedFilterParsers);
+
+  useEffect(() => {
+    function onHelpKey(e: KeyboardEvent) {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (isTypingTarget(e.target)) return;
+      if (e.key !== "?") return;
+      e.preventDefault();
+      setHelpOpen((open) => !open);
+    }
+    window.addEventListener("keydown", onHelpKey);
+    return () => window.removeEventListener("keydown", onHelpKey);
+  }, [setHelpOpen]);
 
   useEffect(() => {
     if (!preset) return;
