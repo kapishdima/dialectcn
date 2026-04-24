@@ -1,6 +1,10 @@
 "use client";
 
-import { Menu02Icon, SpiralsIcon } from "@hugeicons/core-free-icons";
+import {
+  HelpCircleIcon,
+  Menu02Icon,
+  SpiralsIcon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useSetAtom } from "jotai";
 import Link from "next/link";
@@ -17,6 +21,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { helpOpenAtom } from "@/lib/atoms/preset-ui";
 import { submitModalOpenAtom } from "@/lib/atoms/submit-modal";
 import { SOCIAL_LINKS } from "@/lib/config/socials";
 import { cn } from "@/lib/utils";
@@ -26,6 +36,7 @@ const NAV_LINKS = [{ href: "/feed", label: "Feed" }];
 export function Header() {
   const pathname = usePathname();
   const openSubmit = useSetAtom(submitModalOpenAtom);
+  const setHelpOpen = useSetAtom(helpOpenAtom);
   const [menuOpen, setMenuOpen] = useState(false);
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
@@ -100,6 +111,28 @@ export function Header() {
               </a>
             ))}
           </div>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Keyboard shortcuts"
+                  onClick={() => setHelpOpen((open) => !open)}
+                />
+              }
+            >
+              <HugeiconsIcon
+                icon={HelpCircleIcon}
+                size={16}
+                strokeWidth={1.5}
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              Keyboard shortcuts{" "}
+              <span className="ml-1 font-mono text-muted-foreground">?</span>
+            </TooltipContent>
+          </Tooltip>
           <ThemeToggle />
           <HeaderUser />
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>

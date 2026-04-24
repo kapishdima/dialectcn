@@ -2,7 +2,9 @@ import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { DM_Sans, Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Suspense } from "react";
 import { GlobalHotkeys } from "@/components/global-hotkeys";
+import { HelpDialog } from "@/components/help-dialog";
 import { LoginModal } from "@/components/login-modal";
 import { SubmitModal } from "@/components/submit-modal";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -66,7 +68,10 @@ export default function RootLayout({
               <main className="flex min-h-0 flex-1 flex-col">{children}</main>
               <SubmitModal />
               <LoginModal />
-              <GlobalHotkeys />
+              <HelpDialog />
+              <Suspense fallback={null}>
+                <GlobalHotkeys />
+              </Suspense>
               <Toaster />
             </TooltipProvider>
           </ThemeProvider>

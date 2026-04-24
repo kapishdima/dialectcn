@@ -58,7 +58,9 @@ export default async function FeedIndex() {
           </p>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-2">
-          <RandomPresetButton>Random preset</RandomPresetButton>
+          <Suspense fallback={null}>
+            <RandomPresetButton>Random preset</RandomPresetButton>
+          </Suspense>
           <Button
             variant="outline"
             render={

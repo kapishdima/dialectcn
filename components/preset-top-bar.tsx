@@ -1,6 +1,7 @@
 import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
+import { Suspense } from "react";
 import { PresetActions } from "@/components/preset-actions";
 import { PresetContextSync } from "@/components/preset-context-sync";
 import { PresetLikeSlot } from "@/components/preset-like-slot";
@@ -65,7 +66,9 @@ export function PresetTopBar({ preset, prev, next }: Props) {
         </Badge>
       ) : null}
       <div className="ml-auto flex items-center gap-2">
-        <PresetNav currentCode={preset.code} prev={prev} next={next} />
+        <Suspense fallback={null}>
+          <PresetNav currentCode={preset.code} prev={prev} next={next} />
+        </Suspense>
         <PresetActions
           code={preset.code}
           likeSlot={
