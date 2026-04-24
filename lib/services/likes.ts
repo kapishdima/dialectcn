@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, lt, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { like, preset } from "@/lib/db/schema";
 import type { PresetSummary } from "@/lib/services/presets";
@@ -55,13 +55,23 @@ export async function toggleLike(input: {
 
 const LIKES_PAGE_SIZE = 24;
 
+function decodeLikesCursor(
+  cursor: string,
+): { likedAt: Date; presetId: string } | null {
+  const idx = cursor.lastIndexOf("|");
+  if (idx <= 0 || idx === cursor.length - 1) return null;
+  const likedAt = new Date(cursor.slice(0, idx));
+  if (Number.isNaN(likedAt.getTime())) return null;
+  return { likedAt, presetId: cursor.slice(idx + 1) };
+}
+
 export async function listLikedByUser(input: {
   userId: string;
   cursor?: string;
   limit?: number;
 }): Promise<{ items: PresetSummary[]; nextCursor: string | null }> {
   const limit = input.limit ?? LIKES_PAGE_SIZE;
-  const cursorDate = input.cursor ? new Date(input.cursor) : null;
+  const decoded = input.cursor ? decodeLikesCursor(input.cursor) : null;
 
   const rows = await db
     .select({
@@ -78,17 +88,27 @@ export async function listLikedByUser(input: {
     .from(like)
     .innerJoin(preset, eq(like.presetId, preset.id))
     .where(
-      cursorDate
-        ? and(eq(like.userId, input.userId), sql`${like.createdAt} < ${cursorDate}`)
+      decoded
+        ? and(
+            eq(like.userId, input.userId),
+            or(
+              lt(like.createdAt, decoded.likedAt),
+              and(
+                eq(like.createdAt, decoded.likedAt),
+                lt(like.presetId, decoded.presetId),
+              ),
+            ),
+          )
         : eq(like.userId, input.userId),
     )
-    .orderBy(desc(like.createdAt))
+    .orderBy(desc(like.createdAt), desc(like.presetId))
     .limit(limit + 1);
 
   const hasMore = rows.length > limit;
   const page = hasMore ? rows.slice(0, limit) : rows;
   const last = page[page.length - 1];
-  const nextCursor = hasMore && last ? last.likedAt.toISOString() : null;
+  const nextCursor =
+    hasMore && last ? `${last.likedAt.toISOString()}|${last.id}` : null;
 
   const items: PresetSummary[] = page.map(({ likedAt: _likedAt, ...rest }) => rest);
   return { items, nextCursor };

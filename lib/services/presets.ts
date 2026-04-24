@@ -1,4 +1,4 @@
-import { and, desc, eq, lt, sql } from "drizzle-orm";
+import { and, desc, eq, lt, or, sql } from "drizzle-orm";
 import { cache } from "react";
 import { decodePreset, encodePreset, type PresetConfig } from "shadcn/preset";
 import { db } from "@/lib/db/client";
@@ -69,6 +69,18 @@ function rowToSummary(row: typeof preset.$inferSelect): PresetSummary {
   };
 }
 
+function encodeFeedCursor(tie: string | number, id: string): string {
+  return `${tie}|${id}`;
+}
+
+function decodeFeedCursor(
+  cursor: string,
+): { tie: string; id: string } | null {
+  const idx = cursor.lastIndexOf("|");
+  if (idx <= 0 || idx === cursor.length - 1) return null;
+  return { tie: cursor.slice(0, idx), id: cursor.slice(idx + 1) };
+}
+
 export async function listPresets(
   filters: ListFilters = {},
 ): Promise<{ items: PresetSummary[]; nextCursor: string | null }> {
@@ -76,13 +88,25 @@ export async function listPresets(
   const sort = filters.sort ?? "popular";
 
   const where = filters.source ? eq(preset.source, filters.source) : undefined;
-  const cursorWhere = filters.cursor
-    ? sort === "newest"
-      ? lt(preset.createdAt, new Date(filters.cursor))
-      : sort === "popular"
-        ? lt(preset.id, filters.cursor)
-        : undefined
-    : undefined;
+  const decoded = filters.cursor ? decodeFeedCursor(filters.cursor) : null;
+  const cursorWhere =
+    decoded && sort === "newest"
+      ? or(
+          lt(preset.createdAt, new Date(decoded.tie)),
+          and(
+            eq(preset.createdAt, new Date(decoded.tie)),
+            lt(preset.id, decoded.id),
+          ),
+        )
+      : decoded && sort === "popular"
+        ? or(
+            lt(preset.likesCount, Number(decoded.tie)),
+            and(
+              eq(preset.likesCount, Number(decoded.tie)),
+              lt(preset.id, decoded.id),
+            ),
+          )
+        : undefined;
 
   const combined =
     where && cursorWhere
@@ -111,9 +135,9 @@ export async function listPresets(
     !hasMore || !last
       ? null
       : sort === "newest"
-        ? last.createdAt.toISOString()
+        ? encodeFeedCursor(last.createdAt.toISOString(), last.id)
         : sort === "popular"
-          ? last.id
+          ? encodeFeedCursor(last.likesCount, last.id)
           : null; // random cursor not supported
 
   return { items: page.map(rowToSummary), nextCursor };
