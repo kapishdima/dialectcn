@@ -18,21 +18,26 @@ export type PresetWithColors = PresetSummary & {
   fonts: PresetFonts | null;
 };
 
+export function enrichPresetsWithColors(
+  items: PresetSummary[],
+): PresetWithColors[] {
+  return items.map((p) => {
+    const config = decodePreset(p.code);
+    if (!config) return { ...p, colors: null, fonts: null };
+    return {
+      ...p,
+      colors: extractPresetColors(config),
+      fonts: extractPresetFonts(config),
+    };
+  });
+}
+
 export const listPresetsWithColors = cache(
   async (
     filters: ListFilters = {},
   ): Promise<{ items: PresetWithColors[]; nextCursor: string | null }> => {
     const { items, nextCursor } = await listPresets(filters);
-    const enriched = items.map((p) => {
-      const config = decodePreset(p.code);
-      if (!config) return { ...p, colors: null, fonts: null };
-      return {
-        ...p,
-        colors: extractPresetColors(config),
-        fonts: extractPresetFonts(config),
-      };
-    });
-    return { items: enriched, nextCursor };
+    return { items: enrichPresetsWithColors(items), nextCursor };
   },
 );
 

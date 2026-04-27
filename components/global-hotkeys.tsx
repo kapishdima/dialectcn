@@ -13,7 +13,7 @@ import {
   likeTriggerAtom,
   sidebarHiddenAtom,
 } from "@/lib/atoms/preset-ui";
-import { feedFilterParsers } from "@/lib/feed-filters";
+import { feedFilterParsers, serializeFeedFilters } from "@/lib/feed-filters";
 
 const HOTKEYS = new Set(["j", "k", "r", "c", "i", "o", "l"]);
 
@@ -58,8 +58,12 @@ export function GlobalHotkeys() {
     return () => window.removeEventListener("keydown", onGlobalKey);
   }, [setHelpOpen, setSidebarHidden]);
 
+  const queryString = serializeFeedFilters(filters);
+
   useEffect(() => {
     if (!preset) return;
+
+    const hrefFor = (code: string) => `/feed/${code}${queryString}`;
 
     function onKey(e: KeyboardEvent) {
       if (!preset) return;
@@ -72,17 +76,17 @@ export function GlobalHotkeys() {
 
       switch (key) {
         case "j":
-          if (preset.prev) router.push(`/feed/${preset.prev}`);
+          if (preset.prev) router.push(hrefFor(preset.prev));
           break;
         case "k":
-          if (preset.next) router.push(`/feed/${preset.next}`);
+          if (preset.next) router.push(hrefFor(preset.next));
           break;
         case "r":
           pickRandomPresetCodeAction({
             exclude: preset.code,
             source: filters.source ?? undefined,
           }).then((code) => {
-            if (code) router.push(`/feed/${code}`);
+            if (code) router.push(hrefFor(code));
           });
           break;
         case "c":
@@ -106,7 +110,15 @@ export function GlobalHotkeys() {
 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [preset, router, setInstallOpen, bumpLike, bumpCopy, filters.source]);
+  }, [
+    preset,
+    router,
+    setInstallOpen,
+    bumpLike,
+    bumpCopy,
+    filters.source,
+    queryString,
+  ]);
 
   return null;
 }
