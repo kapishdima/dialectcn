@@ -1,8 +1,10 @@
+import type { SearchParams } from "nuqs";
 import { Suspense } from "react";
 import { PresetSidebar } from "@/components/preset-sidebar";
 import { RandomPresetButton } from "@/components/random-preset-button";
 import { Button } from "@/components/ui/button";
-import { listPresetsWithColors } from "@/lib/services/presets";
+import { loadFeedFilters } from "@/lib/feed-filters";
+import { listFeedForView } from "@/lib/services/feed";
 
 const EMPTY_STATE_SWATCHES = [
   "#0b1020",
@@ -15,9 +17,15 @@ const EMPTY_STATE_SWATCHES = [
   "#06b6d4",
 ];
 
-export default async function FeedIndex() {
-  const { items, nextCursor } = await listPresetsWithColors({
-    sort: "popular",
+export default async function FeedIndex({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const { source, sort } = await loadFeedFilters(searchParams);
+  const { items, nextCursor } = await listFeedForView({
+    source: source ?? undefined,
+    sort,
   });
 
   return (

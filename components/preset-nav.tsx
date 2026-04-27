@@ -12,7 +12,7 @@ import { useQueryStates } from "nuqs";
 import { useTransition } from "react";
 import { pickRandomPresetCodeAction } from "@/app/(actions)/presets";
 import { Button } from "@/components/ui/button";
-import { feedFilterParsers } from "@/lib/feed-filters";
+import { feedFilterParsers, serializeFeedFilters } from "@/lib/feed-filters";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -21,12 +21,13 @@ type Props = {
   next: string | null;
 };
 
-const hrefFor = (code: string) => `/feed/${code}`;
-
 export function PresetNav({ currentCode, prev, next }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [filters] = useQueryStates(feedFilterParsers);
+
+  const queryString = serializeFeedFilters(filters);
+  const hrefFor = (code: string) => `/feed/${code}${queryString}`;
 
   const goRandom = () => {
     startTransition(async () => {

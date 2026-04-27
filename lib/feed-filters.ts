@@ -1,4 +1,8 @@
-import { createSerializer, parseAsStringLiteral } from "nuqs";
+import {
+  createLoader,
+  createSerializer,
+  parseAsStringLiteral,
+} from "nuqs/server";
 import { PRESET_SORTS, PRESET_VIEWS } from "@/lib/domain/source-labels";
 
 export const feedFilterParsers = {
@@ -7,3 +11,4 @@ export const feedFilterParsers = {
 };
 
 export const serializeFeedFilters = createSerializer(feedFilterParsers);
+export const loadFeedFilters = createLoader(feedFilterParsers);
