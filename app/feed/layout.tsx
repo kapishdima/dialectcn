@@ -1,4 +1,3 @@
-import { Analytics } from "@vercel/analytics/next";
 import { Suspense } from "react";
 import { FeedAside } from "@/components/feed-aside";
 import { Header } from "@/components/header";
@@ -31,7 +30,6 @@ export default async function FeedLayout({
           </div>
         </div>
       </div>
-      <Analytics />
     </>
   );
 }

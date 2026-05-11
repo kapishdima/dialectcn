@@ -1,4 +1,4 @@
-import { Analytics } from "@vercel/analytics/next";
+import { OpenPanelComponent } from "@openpanel/nextjs";
 import type { Metadata } from "next";
 import { DM_Sans, Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
@@ -76,7 +76,13 @@ export default function RootLayout({
             </TooltipProvider>
           </ThemeProvider>
         </NuqsAdapter>
-        <Analytics />
+        <OpenPanelComponent
+          clientId={process.env.NEXT_PUBLIC_OPENPANEL_CLIENT_ID as string}
+          apiUrl={process.env.NEXT_PUBLIC_OPENPANEL_API_URL}
+          trackScreenViews
+          trackAttributes
+          trackOutgoingLinks
+        />
       </body>
     </html>
   );
