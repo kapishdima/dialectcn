@@ -53,8 +53,8 @@ async function main() {
   const target = connect(targetUrl);
 
   try {
-    console.log("Applying migrations to target...");
-    await migrate(target.db, { migrationsFolder: MIGRATIONS_FOLDER });
+    // console.log("Applying migrations to target...");
+    // await migrate(target.db, { migrationsFolder: MIGRATIONS_FOLDER });
 
     console.log("Copying rows...");
     await copy("user", source.db, target.db, schema.user);
